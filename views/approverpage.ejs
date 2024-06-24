@@ -1,0 +1,221 @@
+<%- include('partials/header'); -%>
+  <nav>
+    <div class="nav-wrapper blue-grey darken-1">
+      <a href="#" class="brand-logo">D C AJMERA</a>
+      <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <a href="#createNewCommuteModal" class="modal-trigger btn teal darken-1">New Entry</a>
+        <a class="btn teal darken-1" href="badges.html">Components</a>
+        <a class="btn red darken-4 z-depth-5" href="/logout">Log Out</a>
+      </ul>
+    </div>
+  </nav>
+
+  <ul id="slide-out" class="sidenav">
+    <li>
+      <div class="user-view">
+        <div class="background">
+          <img src="/dcalogo.jpeg">
+        </div>
+        <a id="userIdElem" href="#name" data-user-id="<%= user._id %>"><span class="white-text name">
+            <%= `Welcome, ${user.fullname}` %>
+          </span></a>
+        <!-- <a href="#email"><span class="white-text email"></span></a> -->
+      </div>
+    </li>
+    <!-- <li><a href="#!"><i class="material-icons">business</i>D C AJMERA</a></li> -->
+    <li><a href="#createNewCommuteModal" class="modal-trigger">New Entry</a></li>
+    <li>
+      <div class="divider"></div>
+    </li>
+    <li><a class="disabled" href="">Components</a></li>
+    <li><a href="/logout">Log Out</a></li>
+  </ul>
+
+
+
+  <!-- CREATE NEW COMMUTE MODAL -->
+  <div id="createNewCommuteModal" class="modal">
+    <div class="modal-content">
+      <h6 class="center">New Entry / नविन एन्ट्री</h6>
+      <div class="row">
+        <form class="col s12" id="createNewCommuteForm">
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="openingReadingKM" id="openingReadingKM" type="number" class="validate" step="0.01" required>
+              <label for="openingReadingKM">चालू रिडींग</label>
+              <div class="openingReadingKM-error"></div>
+            </div>
+          </div>
+
+          <div class="file-field input-field col s12">
+            <div class="btn teal darken-4">
+              <span><i class="Medium material-icons">attach_file</i></span>
+              <input id="openingReadingKMPhoto" type="file">
+            </div>
+            <div class="file-path-wrapper">
+              <label for="openingReadingKMPhoto">चालू रिडींग फोटो</label>
+              <input class="file-path validate" type="text">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="closingReadingKM" id="closingReadingKM" type="number" class="validate" step="0.01" required>
+              <label for="closingReadingKM">बंद रिडींग</label>
+              <div class="closingReadingKM-error"></div>
+            </div>
+          </div>
+
+          <div class="file-field input-field col s12">
+            <div class="btn teal darken-4">
+              <span><i class="Medium material-icons">attach_file</i></span>
+              <input id="closingReadingKMPhoto" type="file">
+            </div>
+            <div class="file-path-wrapper">
+              <label for="closingReadingKMPhoto">बंद रिडींग फोटो</label>
+              <input class="file-path validate" type="text">
+            </div>
+          </div>
+
+          <div class="file-field input-field col s12">
+            <div class="btn teal darken-4">
+              <span><i class="Medium material-icons">attach_file</i></span>
+              <input id="selphiPhoto" type="file">
+            </div>
+            <div class="file-path-wrapper">
+              <label for="selphiPhoto">साईट वरचे सेल्फी</label>
+              <input class="file-path validate" type="text">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="siteName" id="siteName" type="text" class="validate" required>
+              <label for="siteName">Site Name / साईट चे नाव </label>
+              <div class="siteName-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="commuteReason" id="commuteReason" type="text" class="validate" required>
+              <label for="commuteReason">Visit Reason / जाण्याचे कारण</label>
+              <div class="commuteReason-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="visitRemarks" id="visitRemarks" type="text" class="validate">
+              <label for="visitRemarks">Remarks / टिप्पणी </label>
+              <div class="visitRemarks-error"></div>
+            </div>
+          </div>
+          <button class="waves-effect waves-light btn teal darken-4 center">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="commuteRequestForApprover" style="margin-top: 30px;">
+    <div class="row">
+      <div class="col s12 m6">
+        <ul class="collapsible popout z-depth-5">
+          <% if (allcommuteLogs !== '') { %>
+            <% allcommuteLogs.forEach((elem, index) => { %>
+              <li>
+                <div class="collapsible-header"><i class="material-icons">place</i><%= elem.loggedInUserName %></div>
+                <div class="collapsible-body"><span>Date & Time : <%= elem.timeStamp.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }); %></span></div>
+                <div class="collapsible-body"><span>Opening Reading : <%= elem.openingReadingKM %> %></span></div>
+                <div class="collapsible-body"><span>Opening Reading Photo : <a href="<%= elem.openingReadingKMPhotoUrl %>" target="_blank">View Opening Reading KM Photo</a></span></div>
+                <div class="collapsible-body"><span>Closing Reading : <%= elem.closingReadingKM %></span></div>
+                <div class="collapsible-body"><span>Closing Reading Photo : <a href="<%= elem.closingReadingKMPhotoUrl %>" target="_blank">View Closing Reading KM Photo</a></span></div>
+                <div class="collapsible-body"><span>Selfie : <a href="<%= elem.selphiPhotoUrl %>" target="_blank">View Selfie Photo</a></span></div>
+                <div class="collapsible-body"><span>Site Name : <%= elem.siteName %></span></div>
+                <div class="collapsible-body"><span>Commute Reason : <%= elem.commuteReason %></span></div>
+                <div class="collapsible-body"><span>Running KM : <%= elem.runningKM %></span></div>
+                <div class="collapsible-body"><span>Remarks : <%= elem.visitRemarks %></span></div>
+                <div class="collapsible-body"><span>Decision : <%= elem.decision %></span></div>
+                <div class="collapsible-body center"><a class="waves-effect waves-light btn-large approveBtn" docid="<%= elem._id %>">Approve</a></span></div>
+                <div class="collapsible-body center"><a class="waves-effect red waves-light btn-large" id="denyBtn" docid="<%= elem._id %>">Deny</a></span></div>
+              </li>
+            <% }) %>
+          <% } else { %>
+            <li>
+              <div class="collapsible-header"><i class="material-icons">error</i>No Requests Found</div>
+            </li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+  
+  
+
+
+
+
+
+  <script>
+    const loggedInUserElem = document.getElementById('userIdElem');
+    const loggedInUserId = loggedInUserElem.getAttribute('data-user-id');
+
+    const commuteEntryForm = document.getElementById('createNewCommuteForm');
+    commuteEntryForm.addEventListener('submit', async (evt) => {
+      evt.preventDefault();
+
+      const formData = new FormData();
+      formData.append('loggedInUserId', loggedInUserId);
+      formData.append('openingReadingKM', commuteEntryForm.openingReadingKM.value);
+      formData.append('openingReadingKMPhoto', commuteEntryForm.openingReadingKMPhoto.files[0]);
+      formData.append('closingReadingKM', commuteEntryForm.closingReadingKM.value);
+      formData.append('closingReadingKMPhoto', commuteEntryForm.closingReadingKMPhoto.files[0]);
+      formData.append('selphiPhoto', commuteEntryForm.selphiPhoto.files[0]);
+      formData.append('siteName', commuteEntryForm.siteName.value);
+      formData.append('commuteReason', commuteEntryForm.commuteReason.value);
+      formData.append('visitRemarks', commuteEntryForm.visitRemarks.value);
+
+      const res = await fetch('/createcommute', {
+        method: 'POST', // headers: {'Content-Type': 'application/json'}, not userd because this is not json
+        body: formData
+      });
+
+      const data = await res.json();
+      console.log(data);
+    });
+
+    const approveBtn = document.querySelectorAll('.approveBtn');
+    approveBtn.forEach(btnForThatDoc => {
+      btnForThatDoc.addEventListener('click', async () => {
+        const docid = btnForThatDoc.getAttribute('docid');
+        console.log(docid);
+        try {
+          const res = await fetch('/approvecommute', {
+          method: 'POST',
+          headers: {
+          'Content-Type': 'application/json'
+        },
+          body: JSON.stringify( { id : docid })
+        });
+        const data = await res.json();
+        if (data.message === 'Commute log approved successfully') {
+          location.assign('/approverpage')
+        } else {
+          console.log(data);
+        }
+        } catch (error) {
+          console.log(error);
+        }
+        
+      });
+    });
+
+
+
+
+
+  </script>
+
+
+  <%- include('partials/footer'); -%>

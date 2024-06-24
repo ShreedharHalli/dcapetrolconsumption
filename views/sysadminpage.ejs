@@ -1,0 +1,133 @@
+<%- include('partials/header'); -%>
+<nav>
+  <div class="nav-wrapper blue-grey darken-1 z-depth-5">
+    <a href="#" class="brand-logo">D C AJMERA</a>
+    <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+      <a href="#createNewCustomerModal" class="modal-trigger btn teal darken-1">Add New User</a>
+      <a class="btn teal darken-1" href="badges.html">Components</a>
+      <a class="btn red darken-4 z-depth-5" href="/logout">Log Out</a>
+    </ul>
+  </div>
+</nav>
+
+<ul id="slide-out" class="sidenav">
+  <li><div class="user-view">
+    <div class="background">
+      <img src="/dcalogo.jpeg">
+    </div>
+    <a href="#name"><span class="white-text name">D C AJMERA</span></a>
+    <!-- <a href="#email"><span class="white-text email"></span></a> -->
+  </div></li>
+  <!-- <li><a href="#!"><i class="material-icons">business</i>D C AJMERA</a></li> -->
+  <li><a href="#createNewCustomerModal" class="modal-trigger">Add New User</a></li>
+  <li><div class="divider"></div></li>
+  <li><a href="">Components</a></li>
+  <li><a href="/logout">Log Out</a></li>
+</ul>
+
+<!-- CREATE NEW CUSTOMER MODAL -->
+<div id="createNewCustomerModal" class="modal">
+    <div class="modal-content">
+      <h4 class="center">Add New User</h4>
+      <div class="row">
+        <form class="col s12" id="createNewCustomerForm">
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="fullName" id="fullName" type="text" class="validate" required>
+              <label for="fullName">Full Name</label>
+              <div class="fullname-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="email" id="email" type="email" class="validate" required>
+              <label for="email">Email</label>
+              <div class="email-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="password" id="password" type="text" class="validate" required>
+              <label for="password">Password</label>
+              <div class="password-error"></div>
+            </div>
+          </div>
+          <div class="row">
+          <div class="input-field col s12">
+            <select id="userRole">
+              <option value="" disabled selected>Choose User Role</option>
+              <option value="sysAdmin">System Admin</option>
+              <option value="requester">Requester</option>
+              <option value="approver">Approver</option>
+              <option value="management">Management</option>
+            </select>
+            <!-- <label>Choose User Role</label> -->
+          </div>
+        </div>
+
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="assignedVehiclNo" id="assignedVehiclNo" type="text" class="validate" required>
+              <label for="assignedVehiclNo">Assigned Vwehicle Number</label>
+              <div class="assignedVehiclNo-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="ratePerKM" id="ratePerKM" type="text" pattern="[0-9]+([.][0-9]+)?" class="validate" required>
+              <label for="ratePerKM">Rate Per KM</label>
+              <div class="ratePerKM-error"></div>
+            </div>
+          </div>
+          <button class="waves-effect waves-light btn teal darken-4 center">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <script>
+    const createNewCustomerForm = document.querySelector('#createNewCustomerForm');
+  let fullNameError = document.querySelector('.fullname-error');
+  let emailError = document.querySelector('.email-error');
+  let passwordError = document.querySelector('.password-error');
+  let userRoleError = document.querySelector('.userRole-error');
+  let assignedVehiclNoError = document.querySelector('.assignedVehiclNo-error');
+  let ratePerKMError = document.querySelector('.ratePerKM-error');
+
+  createNewCustomerForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    emailError.textContent = ''; 
+    passwordError.textContent = '';
+    fullNameError.textContent = '';
+    const fullname = createNewCustomerForm.fullName.value;
+    const email = createNewCustomerForm.email.value;
+    const password = createNewCustomerForm.password.value;
+    const userRole = createNewCustomerForm.userRole.value;
+    const assignedVehiclNo = createNewCustomerForm.assignedVehiclNo.value;
+    const ratePerKM = createNewCustomerForm.ratePerKM.value;
+    try {
+      const res = await fetch('/signup', {
+        method: 'POST',
+        body: JSON.stringify({ fullname, email, password, userRole, assignedVehiclNo, ratePerKM }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await res.json();
+      console.log(data);
+      if (data.errors) {
+        fullNameError.textContent = data.errors.fullname;
+        emailError.textContent = data.errors.email;
+        passwordError.textContent = data.errors.password;
+      }
+      if (data) {
+        location.assign('/sysadminpage')
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  })
+  </script>
+
+<%- include('partials/footer'); -%>

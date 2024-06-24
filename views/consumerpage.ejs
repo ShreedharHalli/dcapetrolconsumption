@@ -1,0 +1,217 @@
+<%- include('partials/header'); -%>
+  <nav>
+    <div class="nav-wrapper blue-grey darken-1 z-depth-5">
+      <a href="#" class="brand-logo">D C AJMERA</a>
+      <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <a href="#createNewCommuteModal" class="modal-trigger btn teal darken-1">New Entry</a>
+        <a class="btn teal darken-1" href="badges.html">Components</a>
+        <a class="btn red darken-4 z-depth-5" href="/logout">Log Out</a>
+      </ul>
+    </div>
+  </nav>
+
+  <ul id="slide-out" class="sidenav">
+    <li>
+      <div class="user-view">
+        <div class="background">
+          <img src="/dcalogo.jpeg">
+        </div>
+        <a id="userIdElem" href="#name" data-user-id="<%= user._id %>"><span class="white-text name">
+            <%= `Welcome, ${user.fullname}` %>
+          </span></a>
+        <!-- <a href="#email"><span class="white-text email"></span></a> -->
+      </div>
+    </li>
+    <!-- <li><a href="#!"><i class="material-icons">business</i>D C AJMERA</a></li> -->
+    <li><a href="#createNewCommuteModal" class="modal-trigger">New Entry</a></li>
+    <li>
+      <div class="divider"></div>
+    </li>
+    <li><a class="disabled" href="">Components</a></li>
+    <li><a href="/logout">Log Out</a></li>
+  </ul>
+
+  
+
+  <div class="row">
+    <div class="col s12 m12">
+        <div class="card blue-grey darken-1">
+            <div class="card-content white-text">
+              <table class="responsive-table valign-wrapper">
+                    <thead class="left" style="margin-left: -35px;">
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Opening Reading</th>
+                            <th>Photo</th>
+                            <th>Closing Reading</th>
+                            <th>Photo</th>
+                            <th>Selfie Photo</th>
+                            <th>Site Name</th>
+                            <th>Commute Reason</th>
+                            <th>Running KM</th>
+                            <th>Remarks</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                              <% if (commuteLogsForLoggedInUser && commuteLogsForLoggedInUser.length > 0) { %>
+                                <% commuteLogsForLoggedInUser.forEach((elem, index)=> { %>
+                                  <tr>
+                                    <td><%= elem.timeStamp.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }); %></td>
+                                    <td><%= elem.openingReadingKM %></td>
+                                    <td><a href="<%= elem.openingReadingKMPhotoUrl %>" target="_blank">View Opening Reading KM Photo</a></td>
+                                    <td><%= elem.closingReadingKM %></td>
+                                    <td><a href="<%= elem.closingReadingKMPhotoUrl %>" target="_blank">View Closing Reading KM Photo</a></td>
+                                    <td><a href="<%= elem.selphiPhotoUrl %>" target="_blank">View Selfie Photo</a></td>
+                                    <td><%= elem.siteName %></td>
+                                    <td><%= elem.commuteReason %></td>
+                                    <td><%= elem.runningKM %></td>
+                                    <td><%= elem.visitRemarks %></td>
+                                    <td><%= elem.decision %></td>
+                                    </tr>
+                                    <% }) %>
+                                    <% } else { %>
+                                      <tr>
+                              <th><i class="material-icons">error</i>Data Not Found</th>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div> 
+
+ 
+
+
+  <!-- CREATE NEW COMMUTE MODAL -->
+  <div id="createNewCommuteModal" class="modal">
+    <div class="modal-content">
+      <h6 class="center">New Entry / नविन एन्ट्री</h6>
+      <div class="row">
+        <form class="col s12" id="createNewCommuteForm">
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="openingReadingKM" id="openingReadingKM" type="number" class="validate" step="0.01" required>
+              <label for="openingReadingKM">चालू रिडींग</label>
+              <div class="openingReadingKM-error"></div>
+            </div>
+          </div>
+
+          <div class="file-field input-field col s12">
+            <div class="btn teal darken-4">
+                <span><i class="Medium material-icons">attach_file</i></span>
+                <input id="openingReadingKMPhoto" type="file">
+            </div>
+            <div class="file-path-wrapper">
+                <label for="openingReadingKMPhoto">चालू रिडींग फोटो</label>
+                <input class="file-path validate" type="text">
+            </div>
+        </div>
+
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="closingReadingKM" id="closingReadingKM" type="number" class="validate" step="0.01" required>
+              <label for="closingReadingKM">बंद रिडींग</label>
+              <div class="closingReadingKM-error"></div>
+            </div>
+          </div>
+
+          <div class="file-field input-field col s12">
+            <div class="btn teal darken-4">
+                <span><i class="Medium material-icons">attach_file</i></span>
+                <input id="closingReadingKMPhoto" type="file">
+            </div>
+            <div class="file-path-wrapper">
+                <label for="closingReadingKMPhoto">बंद रिडींग फोटो</label>
+                <input class="file-path validate" type="text">
+            </div>
+        </div>
+
+          <div class="file-field input-field col s12">
+            <div class="btn teal darken-4">
+                <span><i class="Medium material-icons">attach_file</i></span>
+                <input id="selphiPhoto" type="file">
+            </div>
+            <div class="file-path-wrapper">
+                <label for="selphiPhoto">साईट वरचे सेल्फी</label>
+                <input class="file-path validate" type="text">
+            </div>
+        </div>
+
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="siteName" id="siteName" type="text" class="validate" required>
+              <label for="siteName">Site Name / साईट चे नाव </label>
+              <div class="siteName-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="commuteReason" id="commuteReason" type="text" class="validate" required>
+              <label for="commuteReason">Visit Reason / जाण्याचे कारण</label>
+              <div class="commuteReason-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="visitRemarks" id="visitRemarks" type="text" class="validate">
+              <label for="visitRemarks">Remarks / टिप्पणी </label>
+              <div class="visitRemarks-error"></div>
+            </div>
+          </div>
+          <button class="waves-effect waves-light btn teal darken-4 center">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const loggedInUserElem = document.getElementById('userIdElem');
+    const loggedInUserId = loggedInUserElem.getAttribute('data-user-id');
+
+    const commuteEntryForm = document.getElementById('createNewCommuteForm');
+    commuteEntryForm.addEventListener('submit', async (evt) => {
+      evt.preventDefault();
+      try {
+        const formData = new FormData();
+      formData.append('loggedInUserId', loggedInUserId);
+      formData.append('openingReadingKM', commuteEntryForm.openingReadingKM.value);
+      formData.append('openingReadingKMPhoto', commuteEntryForm.openingReadingKMPhoto.files[0]);
+      formData.append('closingReadingKM', commuteEntryForm.closingReadingKM.value);
+      formData.append('closingReadingKMPhoto', commuteEntryForm.closingReadingKMPhoto.files[0]);
+      formData.append('selphiPhoto', commuteEntryForm.selphiPhoto.files[0]);
+      formData.append('siteName', commuteEntryForm.siteName.value);
+      formData.append('commuteReason', commuteEntryForm.commuteReason.value);
+      formData.append('visitRemarks', commuteEntryForm.visitRemarks.value);
+
+      const res = await fetch('/createcommute', {
+        method: 'POST',  // headers: {'Content-Type': 'application/json'}, not userd because this is not json
+        body: formData
+      });
+
+      const data = await res.json();
+      if (data.message !== 'Commute log created successfully') {
+          data.errors.message;
+      } if (data.message === 'Commute log created successfully') {
+        commuteEntryForm.reset();
+        let elem = document.querySelector('#createNewCommuteModal');
+        M.Modal.init();
+        let instance = M.Modal.getInstance(elem);
+        instance.close();
+        location.assign('/consumerpage')
+      }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+
+  
+
+
+  </script>
+
+
+  <%- include('partials/footer'); -%>

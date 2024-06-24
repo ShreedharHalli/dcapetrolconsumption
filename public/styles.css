@@ -1,0 +1,39 @@
+.card-content {
+    overflow-x: auto;
+}
+
+table.responsive-table thead th {
+    text-align: left; /* Align headers to the left */
+}
+
+table.responsive-table tbody td {
+    text-align: left; /* Align content to the left */
+    color: #fff; /* Ensure content is white for readability */
+}
+
+table.responsive-table a {
+    color: #ffeb3b; /* Links color for better visibility */
+}
+
+table.responsive-table th, table.responsive-table td {
+    padding: 8px 16px; /* Adjust padding for better spacing */
+}
+
+.card {
+    margin: 20px auto;
+    width: 95%; /* Adjust width to fit the card properly */
+}
+
+@media screen and (max-width: 600px) {
+    table.responsive-table thead, table.responsive-table tbody, table.responsive-table th, table.responsive-table td, table.responsive-table tr {
+        display: block; /* Ensure responsive design on small screens */
+    }
+
+    table.responsive-table th, table.responsive-table td {
+        padding: 10px; /* Adjust padding for better spacing on small screens */
+    }
+
+    table.responsive-table tr {
+        margin-bottom: 15px; /* Add space between rows on small screens */
+    }
+}
