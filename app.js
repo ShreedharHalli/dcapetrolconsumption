@@ -16,9 +16,9 @@ const axios = require('axios');
 dotenv.config();
 
 const app = express();
-const PORT = 3000
+const PORT = 8080
 const server = http.createServer(app);
-const io = new Server(server);
+// const io = new Server(server);
 
 // middleware
 app.use(express.static(path.join(__dirname, 'public')));
