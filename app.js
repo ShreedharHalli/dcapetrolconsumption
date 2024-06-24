@@ -16,7 +16,7 @@ const axios = require('axios');
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000
+const PORT = 3000
 const server = http.createServer(app);
 const io = new Server(server);
 
