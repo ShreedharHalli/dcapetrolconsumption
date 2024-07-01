@@ -48,9 +48,7 @@
                             <th>Photo</th>
                             <th>Selfie Photo</th>
                             <th>Site Name</th>
-                            <th>Commute Reason</th>
                             <th>Running KM</th>
-                            <th>Remarks</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -64,9 +62,7 @@
                                     <td><a href="<%= elem.closingReadingKMPhotoUrl %>" target="_blank">View Closing Reading KM Photo</a></td>
                                     <td><a href="<%= elem.selphiPhotoUrl %>" target="_blank">View Selfie Photo</a></td>
                                     <td><%= elem.siteName %></td>
-                                    <td><%= elem.commuteReason %></td>
                                     <td><%= elem.runningKM %></td>
-                                    <td><%= elem.visitRemarks %></td>
                                     <td><%= elem.decision %></td>
                                     </tr>
                                     <% }) %>
@@ -147,21 +143,10 @@
               <div class="siteName-error"></div>
             </div>
           </div>
-          <div class="row">
-            <div class="input-field col s12">
-              <input name="commuteReason" id="commuteReason" type="text" class="validate" required>
-              <label for="commuteReason">Visit Reason / जाण्याचे कारण</label>
-              <div class="commuteReason-error"></div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="input-field col s12">
-              <input name="visitRemarks" id="visitRemarks" type="text" class="validate">
-              <label for="visitRemarks">Remarks / टिप्पणी </label>
-              <div class="visitRemarks-error"></div>
-            </div>
-          </div>
-          <button class="waves-effect waves-light btn teal darken-4 center">Submit</button>
+          <div class="progress">
+            <div class="indeterminate"></div>
+        </div>
+          <button id="createCommuteBtn" class="waves-effect waves-light btn teal darken-4 center">Submit</button>
         </form>
       </div>
     </div>
@@ -172,29 +157,45 @@
     const loggedInUserId = loggedInUserElem.getAttribute('data-user-id');
 
     const commuteEntryForm = document.getElementById('createNewCommuteForm');
-    commuteEntryForm.addEventListener('submit', async (evt) => {
-      evt.preventDefault();
-      try {
-        const formData = new FormData();
+if (commuteEntryForm) {
+  commuteEntryForm.addEventListener('submit', async (evt) => {
+    evt.preventDefault();
+    document.getElementById('createCommuteBtn').disabled = true;
+    
+    try {
+      const formData = new FormData();
       formData.append('loggedInUserId', loggedInUserId);
-      formData.append('openingReadingKM', commuteEntryForm.openingReadingKM.value);
-      formData.append('openingReadingKMPhoto', commuteEntryForm.openingReadingKMPhoto.files[0]);
-      formData.append('closingReadingKM', commuteEntryForm.closingReadingKM.value);
-      formData.append('closingReadingKMPhoto', commuteEntryForm.closingReadingKMPhoto.files[0]);
-      formData.append('selphiPhoto', commuteEntryForm.selphiPhoto.files[0]);
-      formData.append('siteName', commuteEntryForm.siteName.value);
-      formData.append('commuteReason', commuteEntryForm.commuteReason.value);
-      formData.append('visitRemarks', commuteEntryForm.visitRemarks.value);
+      
+      // Check if each form element exists before trying to access its value
+      const openingReadingKM = commuteEntryForm.openingReadingKM;
+      const openingReadingKMPhoto = commuteEntryForm.openingReadingKMPhoto;
+      const closingReadingKM = commuteEntryForm.closingReadingKM;
+      const closingReadingKMPhoto = commuteEntryForm.closingReadingKMPhoto;
+      const selphiPhoto = commuteEntryForm.selphiPhoto;
+      const siteName = commuteEntryForm.siteName;
+      const commuteReason = commuteEntryForm.commuteReason;
+      const visitRemarks = commuteEntryForm.visitRemarks;
+      
+      if (openingReadingKM) formData.append('openingReadingKM', openingReadingKM.value);
+      if (openingReadingKMPhoto) formData.append('openingReadingKMPhoto', openingReadingKMPhoto.files[0]);
+      if (closingReadingKM) formData.append('closingReadingKM', closingReadingKM.value);
+      if (closingReadingKMPhoto) formData.append('closingReadingKMPhoto', closingReadingKMPhoto.files[0]);
+      if (selphiPhoto) formData.append('selphiPhoto', selphiPhoto.files[0]);
+      if (siteName) formData.append('siteName', siteName.value);
+      if (commuteReason) formData.append('commuteReason', commuteReason.value);
+      if (visitRemarks) formData.append('visitRemarks', visitRemarks.value);
 
       const res = await fetch('/createcommute', {
-        method: 'POST',  // headers: {'Content-Type': 'application/json'}, not userd because this is not json
+        method: 'POST',
         body: formData
       });
 
       const data = await res.json();
       if (data.message !== 'Commute log created successfully') {
-          data.errors.message;
-      } if (data.message === 'Commute log created successfully') {
+        document.getElementById('createCommuteBtn').disabled = false;
+        console.error(data.errors.message);
+      } else {
+        document.getElementById('createCommuteBtn').disabled = false;
         commuteEntryForm.reset();
         let elem = document.querySelector('#createNewCommuteModal');
         M.Modal.init();
@@ -202,10 +203,15 @@
         instance.close();
         location.assign('/consumerpage')
       }
-      } catch (error) {
-        console.log(error);
-      }
-    });
+    } catch (error) {
+      document.getElementById('createCommuteBtn').disabled = false;
+      console.error(error);
+    }
+  });
+} else {
+  console.error('Form element not found');
+}
+
 
 
   

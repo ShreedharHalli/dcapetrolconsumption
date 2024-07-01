@@ -88,7 +88,7 @@ module.exports.approver_get = (req, res) => {
 
 
 module.exports.createcommute_post = async (req, res) => {
-    let { loggedInUserId, openingReadingKM, closingReadingKM, siteName, commuteReason, visitRemarks } = req.body;
+    let { loggedInUserId, openingReadingKM, closingReadingKM, siteName } = req.body;
     
     // Fetch the logged-in user's name
     const user = await User.findOne({ _id: loggedInUserId });
@@ -114,8 +114,6 @@ module.exports.createcommute_post = async (req, res) => {
             closingReadingKMPhoto,
             selphiPhoto,
             siteName,
-            commuteReason,
-            visitRemarks,
             loggedInUserName,
             vehicle,
             ratePerKM,
@@ -173,6 +171,3 @@ module.exports.approvecommute_post = async (req, res) => {
     }
 };
 
-module.exports.confirmworking_get = async (req, res) => {
-    res. status(200).json({"message": "I am listening..."});
-};

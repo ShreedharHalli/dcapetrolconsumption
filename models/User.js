@@ -35,11 +35,11 @@ const userSchema = new mongoose.Schema({
 }, { collection: 'users' });  // Specify the collection name here
 
 // fire a function after doc saved to db
-userSchema.post('save', function (doc, next) {
+/* userSchema.post('save', function (doc, next) {
     console.log('new user was created & saved', doc);
 
     next();
-});
+}); */
 
 // fire a function before doc saved to db
 userSchema.pre('save', async function (next) {

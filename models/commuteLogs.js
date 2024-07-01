@@ -34,10 +34,6 @@ const commuteSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    commuteReason: {
-        type: String,
-        required: true
-    },
     loggedInUserName: {
         type: String,
         required: true
@@ -62,10 +58,6 @@ const commuteSchema = new mongoose.Schema({
         type: String,
         required: true,
         default: 'pending...'
-    },
-    visitRemarks: {
-        type: String,
-        required: true
     }
 });
 
@@ -75,6 +67,7 @@ const commuteSchema = new mongoose.Schema({
 
     next();
 }); */
+
 
 const CommuteLog = mongoose.model('CommuteLog', commuteSchema);
 
