@@ -53,12 +53,9 @@ app.get('/approverpage', requireAuth, (req, res) =>  res.render('approverpage'))
 app.use(authRoutes);
 
 /* 
-const CLIENT_ID = '508049337234-jd43v43pptekjru8usto35mbvfk4vt1v.apps.googleusercontent.com';
-const CLIENT_SECRET = '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';
-const REDIRECT_URI = 'http://localhost:8080/oauth2callback';
-const REFRESH_TOKEN = '1//0gDXiWeIE_JVGCgYIARAAGBASNwF-L9Irr7OF7Qu7Fil0IraA17ulNipnVFLmaGr0qp3vfPozPEZDg_w_8J8oxgY-keKj3a7kWi8';
 
-const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+
+const oauth2Client = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI);
 
 app.get('/oauth2callback', async (req, res) => {
     const code = req.query.code;
