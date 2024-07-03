@@ -171,3 +171,118 @@ module.exports.approvecommute_post = async (req, res) => {
     }
 };
 
+
+
+
+// Ensure the uploads directory exists
+const uploadDir = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    console.log('Uploads directory does not exist. Creating one...');
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+
+
+
+module.exports.createcommute_post = async (req, res) => {
+    try {
+        const { loggedInUserId, openingReadingKM, closingReadingKM, siteName } = req.body;
+
+        // Fetch the logged-in user's name
+        const user = await User.findOne({ _id: loggedInUserId });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const loggedInUserName = user.fullname;
+        const vehicle = user.assignedVehiclNo;
+        const ratePerKM = parseFloat(user.ratePerKM);
+        const runningKM = (parseFloat(closingReadingKM) - parseFloat(openingReadingKM)).toFixed(2);
+        const amount = (runningKM * ratePerKM).toFixed(2);
+
+        if (!req.files || !req.files.openingReadingKMPhoto || !req.files.closingReadingKMPhoto || !req.files.selphiPhoto) {
+            return res.status(400).json({ error: 'All photos are required' });
+        }
+
+        const openingReadingKMPhoto = req.files.openingReadingKMPhoto;
+        console.log(openingReadingKMPhoto.tempFilePath)
+        const closingReadingKMPhoto = req.files.closingReadingKMPhoto;
+        const selphiPhoto = req.files.selphiPhoto;
+
+         // Move files to uploads directory
+        //  await mv(openingReadingKMPhoto.tempFilePath, path.join(uploadDir, `${Date.now()}`));
+        //  await mv(closingReadingKMPhoto.tempFilePath, path.join(uploadDir, `${Date.now()}`));
+        //  await mv(selphiPhoto.tempFilePath, path.join(uploadDir, `${Date.now()}`));
+
+         // Move files to uploads directory and get their paths and mimetypes
+        const openingReadingKMPhotoData = await manageUploadedFile('create', openingReadingKMPhoto);
+        const closingReadingKMPhotoData = await manageUploadedFile('create', closingReadingKMPhoto);
+        const selphiPhotoData = await manageUploadedFile('create', selphiPhoto);
+
+        // Example of uploading to a service like Google Drive (assuming `uploadFile` function exists)
+        const openingReadingKMPhotoUpload = await uploadFile(openingReadingKMPhotoData.filePath, openingReadingKMPhotoData.mimetype);
+        const closingReadingKMPhotoUpload = await uploadFile(closingReadingKMPhotoData.filePath, closingReadingKMPhotoData.mimetype);
+        const selphiPhotoUpload = await uploadFile(selphiPhotoData.filePath, selphiPhotoData.mimetype);
+
+        const commuteLog = new CommuteLog({
+            loggedInUser: loggedInUserId,
+            openingReadingKM,
+            openingReadingKMPhoto: openingReadingKMPhotoUpload.webContentLink, // Assuming this is the URL/path
+            closingReadingKM,
+            closingReadingKMPhoto: closingReadingKMPhotoUpload.webContentLink, // Assuming this is the URL/path
+            selphiPhoto: selphiPhotoUpload.webContentLink, // Assuming this is the URL/path
+            siteName,
+            loggedInUserName,
+            vehicle,
+            ratePerKM,
+            runningKM,
+            amount
+        });
+
+        await commuteLog.save();
+        await manageUploadedFile('delete', openingReadingKMPhoto);
+        await manageUploadedFile('delete', closingReadingKMPhoto);
+        await manageUploadedFile('delete', selphiPhoto);
+        res.status(200).json({ message: 'Commute log created successfully' });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+function manageUploadedFile(action, file) {
+    return new Promise((resolve, reject) => {
+        try {
+            if (action === 'create') {
+                const filePath = path.join(__dirname, '..', 'uploads', `${Date.now()}-${file.name}`);
+
+                file.mv(filePath, (err) => {
+                    if (err) {
+                        console.error(err);
+                        reject(err); // Reject the promise on failure
+                    } else {
+                        resolve({ filePath, mimetype: file.mimetype }); // Resolve the promise with the file path and mimetype on success
+                    }
+                });
+            } else if (action === 'delete') {
+                const filePath = path.join(__dirname, 'tmp', file.name);
+
+                fs.unlink(filePath, (err) => {
+                    if (err) {
+                        console.error(err);
+                        reject(err); // Reject the promise on failure
+                    } else {
+                        resolve(true); // Resolve the promise with true on success
+                    }
+                });
+            } else {
+                const errorMessage = 'Invalid action';
+                console.error(errorMessage);
+                reject(new Error(errorMessage)); // Reject the promise with an error for invalid action
+            }
+        } catch (error) {
+            reject(error); // Reject the promise on any other unexpected error
+        }
+    });
+}
