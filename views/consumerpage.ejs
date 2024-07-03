@@ -161,6 +161,7 @@
     commuteEntryForm.addEventListener('submit', async (evt) => {
   evt.preventDefault();
   document.getElementById('createCommuteBtn').disabled = true;
+  document.getElementById('preLoader').style.display = 'block';
   try {
     const formData = new FormData();
     formData.append('loggedInUserId', loggedInUserId);
@@ -170,9 +171,6 @@
     formData.append('closingReadingKMPhoto', commuteEntryForm.closingReadingKMPhoto.files[0]);
     formData.append('selphiPhoto', commuteEntryForm.selphiPhoto.files[0]);
     formData.append('siteName', commuteEntryForm.siteName.value);
-    formData.forEach((item) => {
-      console.log(item);
-    })
     const res = await fetch('/createcommute', {
       method: 'POST',
       body: formData,
