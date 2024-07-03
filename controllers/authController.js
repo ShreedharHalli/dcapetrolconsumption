@@ -1,7 +1,15 @@
 const User = require("../models/User");
 const CommuteLog = require("../models/commuteLogs");
 const jwt = require("jsonwebtoken");
-
+const path = require('path');
+const express = require('express');
+const fs = require('fs');
+const { uploadFile } = require('../googledrive/googleDrive');
+const mongoose = require('mongoose');
+const multer = require('multer');
+const { google } = require('googleapis');
+const { promisify } = require('util');
+const mv = promisify(require('mv'));
 
 
 // handle errors
@@ -208,11 +216,6 @@ module.exports.createcommute_post = async (req, res) => {
         console.log(openingReadingKMPhoto.tempFilePath)
         const closingReadingKMPhoto = req.files.closingReadingKMPhoto;
         const selphiPhoto = req.files.selphiPhoto;
-
-         // Move files to uploads directory
-        //  await mv(openingReadingKMPhoto.tempFilePath, path.join(uploadDir, `${Date.now()}`));
-        //  await mv(closingReadingKMPhoto.tempFilePath, path.join(uploadDir, `${Date.now()}`));
-        //  await mv(selphiPhoto.tempFilePath, path.join(uploadDir, `${Date.now()}`));
 
          // Move files to uploads directory and get their paths and mimetypes
         const openingReadingKMPhotoData = await manageUploadedFile('create', openingReadingKMPhoto);

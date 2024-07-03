@@ -51,3 +51,32 @@ app.get('/sysadminpage', requireAuth, (req, res) => res.render('sysadminpage'));
 app.get('/consumerpage', requireAuth, (req, res) =>  res.render('consumerpage'));
 app.get('/approverpage', requireAuth, (req, res) =>  res.render('approverpage'));
 app.use(authRoutes);
+
+/* 
+const CLIENT_ID = '508049337234-jd43v43pptekjru8usto35mbvfk4vt1v.apps.googleusercontent.com';
+const CLIENT_SECRET = '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';
+const REDIRECT_URI = 'http://localhost:8080/oauth2callback';
+const REFRESH_TOKEN = '1//0gDXiWeIE_JVGCgYIARAAGBASNwF-L9Irr7OF7Qu7Fil0IraA17ulNipnVFLmaGr0qp3vfPozPEZDg_w_8J8oxgY-keKj3a7kWi8';
+
+const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+
+app.get('/oauth2callback', async (req, res) => {
+    const code = req.query.code;
+
+    try {
+        const { tokens } = await oauth2Client.getToken(code);
+        oauth2Client.setCredentials(tokens);
+        console.log('Tokens acquired :', tokens);
+
+        // Store the refresh token securely
+        // In a real application, you would store the refresh token in a database
+        res.send('Authentication successful! You can close this window.');
+    } catch (error) {
+        console.error('Error retrieving access token', error);
+        res.status(500).send('Authentication failed');
+    }
+}); */
+
+
+
+
