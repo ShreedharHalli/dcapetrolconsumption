@@ -58,6 +58,7 @@ const checkUser = async (req, res, next) => {
             closingReadingKMPhotoUrl: log.closingReadingKMPhoto,
             selphiPhotoUrl: log.selphiPhoto
         }));
+        console.log(updatedLogs);
 
         if (user.userRole === 'requester') {
             res.locals.commuteLogsForLoggedInUser = updatedLogs;
