@@ -1,13 +1,14 @@
  const mongoose = require('mongoose');
 
 
-const commuteSchema = new mongoose.Schema({
+ const commuteSchema = new mongoose.Schema({
     timeStamp: {
         type: Date,
         default: Date.now
     },
     loggedInUser: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
     openingReadingKM: {
@@ -15,7 +16,7 @@ const commuteSchema = new mongoose.Schema({
         required: true
     },
     openingReadingKMPhoto: {
-        type: Buffer,
+        type: String, // Store as String (path or URL to the photo)
         required: true
     },
     closingReadingKM: {
@@ -23,11 +24,11 @@ const commuteSchema = new mongoose.Schema({
         required: true
     },
     closingReadingKMPhoto: {
-        type: Buffer,
+        type: String, // Store as String (path or URL to the photo)
         required: true
     },
     selphiPhoto: {
-        type: Buffer,
+        type: String, // Store as String (path or URL to the photo)
         required: true
     },
     siteName: {

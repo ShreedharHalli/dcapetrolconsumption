@@ -54,10 +54,11 @@ const checkUser = async (req, res, next) => {
 
         const updatedLogs = logs.map(log => ({
             ...log,
-            openingReadingKMPhotoUrl: `/images/${log._id}/openingReadingKMPhoto`,
-            closingReadingKMPhotoUrl: `/images/${log._id}/closingReadingKMPhoto`,
-            selphiPhotoUrl: `/images/${log._id}/selphiPhoto`
+            openingReadingKMPhotoUrl: log.openingReadingKMPhoto,
+            closingReadingKMPhotoUrl: log.closingReadingKMPhoto,
+            selphiPhotoUrl: log.selphiPhoto
         }));
+        console.log(updatedLogs);
 
         if (user.userRole === 'requester') {
             res.locals.commuteLogsForLoggedInUser = updatedLogs;

@@ -89,7 +89,7 @@
         <form class="col s12" id="createNewCommuteForm">
           <div class="row">
             <div class="input-field col s12">
-              <input name="openingReadingKM" id="openingReadingKM" type="number" class="validate" step="0.01" required>
+               <input name="openingReadingKM" id="openingReadingKM" type="number" class="validate" step="0.01">  <!--required -->
               <label for="openingReadingKM">चालू रिडींग</label>
               <div class="openingReadingKM-error"></div>
             </div>
@@ -108,7 +108,7 @@
 
           <div class="row">
             <div class="input-field col s12">
-              <input name="closingReadingKM" id="closingReadingKM" type="number" class="validate" step="0.01" required>
+              <input name="closingReadingKM" id="closingReadingKM" type="number" class="validate" step="0.01">
               <label for="closingReadingKM">बंद रिडींग</label>
               <div class="closingReadingKM-error"></div>
             </div>
@@ -138,7 +138,7 @@
 
           <div class="row">
             <div class="input-field col s12">
-              <input name="siteName" id="siteName" type="text" class="validate" required>
+              <input name="siteName" id="siteName" type="text" class="validate">
               <label for="siteName">Site Name / साईट चे नाव </label>
               <div class="siteName-error"></div>
             </div>
@@ -155,62 +155,49 @@
   <script>
     const loggedInUserElem = document.getElementById('userIdElem');
     const loggedInUserId = loggedInUserElem.getAttribute('data-user-id');
-
     const commuteEntryForm = document.getElementById('createNewCommuteForm');
-if (commuteEntryForm) {
-  commuteEntryForm.addEventListener('submit', async (evt) => {
-    evt.preventDefault();
-    document.getElementById('createCommuteBtn').disabled = true;
+  
     
-    try {
-      const formData = new FormData();
-      formData.append('loggedInUserId', loggedInUserId);
-      
-      // Check if each form element exists before trying to access its value
-      const openingReadingKM = commuteEntryForm.openingReadingKM;
-      const openingReadingKMPhoto = commuteEntryForm.openingReadingKMPhoto;
-      const closingReadingKM = commuteEntryForm.closingReadingKM;
-      const closingReadingKMPhoto = commuteEntryForm.closingReadingKMPhoto;
-      const selphiPhoto = commuteEntryForm.selphiPhoto;
-      const siteName = commuteEntryForm.siteName;
-      const commuteReason = commuteEntryForm.commuteReason;
-      const visitRemarks = commuteEntryForm.visitRemarks;
-      
-      if (openingReadingKM) formData.append('openingReadingKM', openingReadingKM.value);
-      if (openingReadingKMPhoto) formData.append('openingReadingKMPhoto', openingReadingKMPhoto.files[0]);
-      if (closingReadingKM) formData.append('closingReadingKM', closingReadingKM.value);
-      if (closingReadingKMPhoto) formData.append('closingReadingKMPhoto', closingReadingKMPhoto.files[0]);
-      if (selphiPhoto) formData.append('selphiPhoto', selphiPhoto.files[0]);
-      if (siteName) formData.append('siteName', siteName.value);
-      if (commuteReason) formData.append('commuteReason', commuteReason.value);
-      if (visitRemarks) formData.append('visitRemarks', visitRemarks.value);
+    commuteEntryForm.addEventListener('submit', async (evt) => {
+  evt.preventDefault();
+  document.getElementById('createCommuteBtn').disabled = true;
+  try {
+    const formData = new FormData();
+    formData.append('loggedInUserId', loggedInUserId);
+    formData.append('openingReadingKM', commuteEntryForm.openingReadingKM.value);
+    formData.append('openingReadingKMPhoto', commuteEntryForm.openingReadingKMPhoto.files[0]);
+    formData.append('closingReadingKM', commuteEntryForm.closingReadingKM.value);
+    formData.append('closingReadingKMPhoto', commuteEntryForm.closingReadingKMPhoto.files[0]);
+    formData.append('selphiPhoto', commuteEntryForm.selphiPhoto.files[0]);
+    formData.append('siteName', commuteEntryForm.siteName.value);
+    formData.forEach((item) => {
+      console.log(item);
+    })
+    const res = await fetch('/createcommute', {
+      method: 'POST',
+      body: formData,
+    });
 
-      const res = await fetch('/createcommute', {
-        method: 'POST',
-        body: formData
-      });
-
-      const data = await res.json();
-      if (data.message !== 'Commute log created successfully') {
-        document.getElementById('createCommuteBtn').disabled = false;
-        console.error(data.errors.message);
-      } else {
-        document.getElementById('createCommuteBtn').disabled = false;
-        commuteEntryForm.reset();
-        let elem = document.querySelector('#createNewCommuteModal');
-        M.Modal.init();
-        let instance = M.Modal.getInstance(elem);
-        instance.close();
-        location.assign('/consumerpage')
-      }
-    } catch (error) {
+    const data = await res.json();
+    if (data.message !== 'Commute log created successfully') {
       document.getElementById('createCommuteBtn').disabled = false;
-      console.error(error);
+      console.error(data.errors.message);
+    } else {
+      document.getElementById('createCommuteBtn').disabled = false;
+      commuteEntryForm.reset();
+      let elem = document.querySelector('#createNewCommuteModal');
+      M.Modal.init();
+      let instance = M.Modal.getInstance(elem);
+      instance.close();
+      location.assign('/consumerpage');
     }
-  });
-} else {
-  console.error('Form element not found');
-}
+  } catch (error) {
+    document.getElementById('createCommuteBtn').disabled = false;
+    console.error(error);
+  }
+});
+
+
 
 
 
