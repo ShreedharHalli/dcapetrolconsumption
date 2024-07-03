@@ -143,7 +143,7 @@
               <div class="siteName-error"></div>
             </div>
           </div>
-          <div class="progress">
+          <div class="progress" id="preLoader" style="display: none;">
             <div class="indeterminate"></div>
         </div>
           <button id="createCommuteBtn" class="waves-effect waves-light btn teal darken-4 center">Submit</button>
@@ -161,7 +161,8 @@
     commuteEntryForm.addEventListener('submit', async (evt) => {
   evt.preventDefault();
   document.getElementById('createCommuteBtn').disabled = true;
-  try {
+  document.getElementById('preLoader').style.display = 'block';
+   try {
     const formData = new FormData();
     formData.append('loggedInUserId', loggedInUserId);
     formData.append('openingReadingKM', commuteEntryForm.openingReadingKM.value);
@@ -170,9 +171,6 @@
     formData.append('closingReadingKMPhoto', commuteEntryForm.closingReadingKMPhoto.files[0]);
     formData.append('selphiPhoto', commuteEntryForm.selphiPhoto.files[0]);
     formData.append('siteName', commuteEntryForm.siteName.value);
-    formData.forEach((item) => {
-      console.log(item);
-    })
     const res = await fetch('/createcommute', {
       method: 'POST',
       body: formData,
@@ -194,7 +192,7 @@
   } catch (error) {
     document.getElementById('createCommuteBtn').disabled = false;
     console.error(error);
-  }
+  } 
 });
 
 

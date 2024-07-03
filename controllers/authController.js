@@ -195,7 +195,9 @@ if (!fs.existsSync(uploadDir)) {
 module.exports.createcommute_post = async (req, res) => {
     try {
         const { loggedInUserId, openingReadingKM, closingReadingKM, siteName } = req.body;
-
+        if (parseInt(closingReadingKM) < parseInt(openingReadingKM)) {
+            return res.status(404).json({ message: 'Invalid reading entered'} );
+        } else {
         // Fetch the logged-in user's name
         const user = await User.findOne({ _id: loggedInUserId });
         if (!user) {
@@ -213,7 +215,6 @@ module.exports.createcommute_post = async (req, res) => {
         }
 
         const openingReadingKMPhoto = req.files.openingReadingKMPhoto;
-        console.log(openingReadingKMPhoto.tempFilePath)
         const closingReadingKMPhoto = req.files.closingReadingKMPhoto;
         const selphiPhoto = req.files.selphiPhoto;
 
@@ -252,6 +253,7 @@ module.exports.createcommute_post = async (req, res) => {
         await manageUploadedFile('delete', closingReadingKMPhoto);
         await manageUploadedFile('delete', selphiPhoto);
         res.status(200).json({ message: 'Commute log created successfully' });
+    }
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: error.message });
@@ -263,7 +265,7 @@ function manageUploadedFile(action, file) {
     return new Promise((resolve, reject) => {
         try {
             if (action === 'create') {
-                const filePath = path.join(__dirname, '..', 'uploads', `${Date.now()}-${file.name}`);
+                const filePath = path.join(__dirname, '..', 'uploads', `${file.name}`);
 
                 file.mv(filePath, (err) => {
                     if (err) {
@@ -274,7 +276,7 @@ function manageUploadedFile(action, file) {
                     }
                 });
             } else if (action === 'delete') {
-                const filePath = path.join(__dirname, 'tmp', file.name);
+                const filePath = path.join(__dirname, '..', 'uploads', `${file.name}`);
 
                 fs.unlink(filePath, (err) => {
                     if (err) {
