@@ -32,53 +32,122 @@
     <li><a href="/logout">Log Out</a></li>
   </ul>
 
-  
-
   <div class="row">
-    <div class="col s12 m12">
-        <div class="card blue-grey darken-1">
-            <div class="card-content white-text">
-              <table class="responsive-table valign-wrapper">
-                    <thead class="left" style="margin-left: -35px;">
-                        <tr>
-                            <th>Date & Time</th>
-                            <th>Opening Reading</th>
-                            <th>Photo</th>
-                            <th>Closing Reading</th>
-                            <th>Photo</th>
-                            <th>Selfie Photo</th>
-                            <th>Site Name</th>
-                            <th>Running KM</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                              <% if (commuteLogsForLoggedInUser && commuteLogsForLoggedInUser.length > 0) { %>
-                                <% commuteLogsForLoggedInUser.forEach((elem, index)=> { %>
-                                  <tr>
-                                    <td><%= elem.timeStamp.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }); %></td>
-                                    <td><%= elem.openingReadingKM %></td>
-                                    <td><a href="<%= elem.openingReadingKMPhotoUrl %>" target="_blank">View Opening Reading KM Photo</a></td>
-                                    <td><%= elem.closingReadingKM %></td>
-                                    <td><a href="<%= elem.closingReadingKMPhotoUrl %>" target="_blank">View Closing Reading KM Photo</a></td>
-                                    <td><a href="<%= elem.selphiPhotoUrl %>" target="_blank">View Selfie Photo</a></td>
-                                    <td><%= elem.siteName %></td>
-                                    <td><%= elem.runningKM %></td>
-                                    <td><%= elem.decision %></td>
-                                    </tr>
-                                    <% }) %>
-                                    <% } else { %>
-                                      <tr>
-                              <th><i class="material-icons">error</i>Data Not Found</th>
-                            </tr>
-                        <% } %>
-                    </tbody>
-                </table>
-            </div>
+    <div class="col s12 m6">
+      <div class="card blue-grey darken-1 z-depth-5" style="height: 100px;">
+        <div class="card-content white-text col s12 center-align">
+          <span class="card-title" style="margin-top: -20px;"><%= `${user.fullname}` %></span>
+          <div class="row">
+            <div class="col s6"><%=`Last Total Running ${user.lastTotalRunningKM} KM`%></div>
+            <div class="col s6"><%= `Presently Available Amount Rs. ${user.presentlyAvailableAmount}` %></div>
+          </div>
         </div>
+      </div>
     </div>
-</div> 
+  </div>
 
- 
+  <div class="row requesterTable">
+    <div class="col s12 m12">
+      <div class="card blue-grey darken-1 z-depth-5">
+        <div class="card-content white-text">
+          <table class="responsive-table valign-wrapper">
+            <thead class="left" style="margin-left: -35px;">
+              <tr>
+                <th>Date & Time</th>
+                <th>Opening Reading</th>
+                <th>Opening Photo</th>
+                <th>Closing Reading</th>
+                <th>Closing Photo</th>
+                <th>Selfie Photo</th>
+                <th>Site Name</th>
+                <th>Running KM</th>
+                <th>Status</th>
+                <th>Edit</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (commuteLogsForLoggedInUser && commuteLogsForLoggedInUser.length> 0) { %>
+                <% commuteLogsForLoggedInUser.forEach((elem, index)=> { %>
+                  <tr>
+                    <td>
+                      <%= elem.timeStamp.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }); %>
+                    </td>
+                    <td>
+                      <%= elem.openingReadingKM %>
+                    </td>
+                    <td>
+                      <% if (elem.openingReadingKMPhotoUrl !=='0' ) { %>
+                        <a href="<%= elem.openingReadingKMPhotoUrl %>" target="_blank">Opening Reading Photo</a>
+                        <% } else { %>
+                          No Opening Reading KM Photo
+                          <% } %>
+                    </td>
+                    <td>
+                      <%= elem.closingReadingKM %>
+                    </td>
+                    <td>
+                      <% if (elem.closingReadingKMPhotoUrl !=='0' ) { %>
+                        <a href="<%= elem.closingReadingKMPhotoUrl %>" target="_blank">Closing Reading Photo</a>
+                        <% } else { %>
+                          --
+                          <% } %>
+                    </td>
+                    <td>
+                      <% if (elem.selphiPhotoUrl !=='0' ) { %>
+                        <a href="<%= elem.selphiPhotoUrl %>" target="_blank">Selfie Photo</a>
+                        <% } else { %>
+                          --
+                          <% } %>
+                    </td>
+                    <td>
+                      <%= elem.siteName %>
+                    </td>
+                    <td>
+                      <%= elem.runningKM %>
+                    </td>
+                    <td>
+                      <%= elem.decision %>
+                    </td>
+                    <td>
+                      <% if (elem._id !=='0' ) { %>
+                        <% if(elem.decision !=='approved' ) { %>
+                          <% if(elem.selphiPhotoUrl !=='0' ) {%>
+                            <button href="#addClosingDataToCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
+                              class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Edit</button>
+                            <%} else { %>
+                              <button href="#editCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
+                                class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Edit</button>
+                              <% } %>
+                                <% } else { %>
+                                  <button href="#editCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
+                                    class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn grey disabled">Edit</button>
+                                  <% } %>
+                                    <% } else { %>
+                                      --
+                                      <% } %>
+                    </td>
+                  </tr>
+                  <% }) %>
+                    <% } else { %>
+                      <tr>
+                        <th><i class="material-icons">error</i>Data Not Found</th>
+                      </tr>
+                      <% } %>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-action" style="margin-top: -10px;">
+          <div class="row">
+            <div class="col s12 center-align">
+              <button href="#createNewCommuteModal"
+                class="modal-trigger waves-effect waves-light btn teal darken-4 z-depth-5">ENTER NEW TRIP</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
 
   <!-- CREATE NEW COMMUTE MODAL -->
@@ -89,117 +158,295 @@
         <form class="col s12" id="createNewCommuteForm">
           <div class="row">
             <div class="input-field col s12">
-               <input name="openingReadingKM" id="openingReadingKM" type="number" class="validate" step="0.01">  <!--required -->
+              <input name="openingReadingKM" id="openingReadingKM" type="number" class="validate" step="0.01" required>
+              <!--required -->
               <label for="openingReadingKM">चालू रिडींग</label>
               <div class="openingReadingKM-error"></div>
             </div>
           </div>
 
-          <div class="file-field input-field col s12">
-            <div class="btn teal darken-4">
+          <div class="file-field input-field col s12" style="margin-left: -15px;">
+            <div class="right-align">
+              <div class="btn teal darken-4">
                 <span><i class="Medium material-icons">attach_file</i></span>
-                <input id="openingReadingKMPhoto" type="file">
-            </div>
-            <div class="file-path-wrapper">
-                <label for="openingReadingKMPhoto">चालू रिडींग फोटो</label>
+                <input id="openingReadingKMPhoto" type="file" accept="image/*" required>
+              </div>
+              <div class="file-path-wrapper">
+                <label for="openingReadingKMPhoto" style="margin-right: 60px;" currDocId="">चालू रिडींग फोटो</label>
                 <input class="file-path validate" type="text">
-            </div>
-        </div>
-
-          <div class="row">
-            <div class="input-field col s12">
-              <input name="closingReadingKM" id="closingReadingKM" type="number" class="validate" step="0.01">
-              <label for="closingReadingKM">बंद रिडींग</label>
-              <div class="closingReadingKM-error"></div>
+              </div>
             </div>
           </div>
 
-          <div class="file-field input-field col s12">
-            <div class="btn teal darken-4">
-                <span><i class="Medium material-icons">attach_file</i></span>
-                <input id="closingReadingKMPhoto" type="file">
-            </div>
-            <div class="file-path-wrapper">
-                <label for="closingReadingKMPhoto">बंद रिडींग फोटो</label>
-                <input class="file-path validate" type="text">
-            </div>
-        </div>
-
-          <div class="file-field input-field col s12">
-            <div class="btn teal darken-4">
-                <span><i class="Medium material-icons">attach_file</i></span>
-                <input id="selphiPhoto" type="file">
-            </div>
-            <div class="file-path-wrapper">
-                <label for="selphiPhoto">साईट वरचे सेल्फी</label>
-                <input class="file-path validate" type="text">
-            </div>
-        </div>
-
-          <div class="row">
-            <div class="input-field col s12">
-              <input name="siteName" id="siteName" type="text" class="validate">
-              <label for="siteName">Site Name / साईट चे नाव </label>
-              <div class="siteName-error"></div>
-            </div>
-          </div>
           <div class="progress" id="preLoader" style="display: none;">
             <div class="indeterminate"></div>
-        </div>
-          <button id="createCommuteBtn" class="waves-effect waves-light btn teal darken-4 center">Submit</button>
+          </div>
+
+          <div class="row">
+            <div class="col s12 center-align">
+              <button id="createCommuteBtn" class="waves-effect waves-light btn teal darken-4">Submit</button>
+            </div>
+          </div>
+
+          <div class="row" id="showErratFirstEntryForm" style="display: block;">
+            <div class=" s12 center-align">
+              <p id="logErratFirstEntryForm" class="red"></p>
+            </div>
+          </div>
         </form>
       </div>
     </div>
   </div>
 
+
+  <!-- ADD SELFI PHOTO MODAL -->
+  <div id="editCommuteModal" class="modal">
+    <div class="modal-content">
+      <h4 class="center">UPLOAD SELFI</h4>
+      <div class="row">
+        <form class="col s12" id="editCommuteForm">
+
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="siteName" id="siteName" type="text" class="validate" required> <!--required -->
+              <label for="siteName">Site Name</label>
+              <div class="siteName-error"></div>
+            </div>
+          </div>
+
+          <div class="file-field input-field col s12" style="margin-left: -15px;">
+            <div class="right-align">
+              <div class="btn teal darken-4">
+                <span><i class="Medium material-icons">attach_file</i></span>
+                <input id="editUploadSelfiPhoto" type="file" accept="image/*" required>
+              </div>
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text">
+              </div>
+            </div>
+          </div>
+
+          <div class="progress" id="editpreLoader" style="display: none;">
+            <div class="indeterminate"></div>
+          </div>
+
+          <div class="row">
+            <div class="col s12 center-align">
+              <button id="editcreateCommuteBtn" class="waves-effect waves-light btn teal darken-4">Submit</button>
+            </div>
+          </div>
+
+          <div class="row" id="showErratEditEntryForm" style="display: none;">
+            <div class=" s12 center-align">
+              <p id="logErratEditEntryForm" class="red"></p>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ADD CLOSING DETAILS MODAL -->
+  <div id="addClosingDataToCommuteModal" class="modal">
+    <div class="modal-content">
+      <h4 class="center">Add Closing Details</h4>
+      <div class="row">
+        <form class="col s12" id="addClosingDataToCommuteForm">
+
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="closingReadingKM" id="closingReadingKM" type="number" class="validate" step="0.01" required>
+              <!--required -->
+              <label for="closingReadingKM">बंद रिडींग</label>
+              <div class="closingReadingKM-error"></div>
+            </div>
+          </div>
+
+          <div class="file-field input-field col s12" style="margin-left: -15px;">
+            <div class="right-align">
+              <div class="btn teal darken-4">
+                <span><i class="Medium material-icons">attach_file</i></span>
+                <input id="closingReadingPhoto" type="file" accept="image/*" required>
+              </div>
+              <div class="file-path-wrapper">
+                <label for="closingReadingPhoto" style="margin-right: 60px;">बंद रिडींग फोटो</label>
+                <input class="file-path validate" type="text">
+              </div>
+            </div>
+          </div>
+
+          <div class="progress" id="closingpreLoader" style="display: none;">
+            <div class="indeterminate"></div>
+          </div>
+
+          <div class="row">
+            <div class="col s12 center-align">
+              <button id="closingReadingCommuteBtn" class="waves-effect waves-light btn teal darken-4">Submit</button>
+            </div>
+          </div>
+
+          <div class="row" id="showErrataddClosingDataToCommuteForm" style="display: none;">
+            <div class=" s12 center-align">
+              <p id="logErrataddClosingDataToCommuteForm" class="red"></p>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+
+
   <script>
     const loggedInUserElem = document.getElementById('userIdElem');
     const loggedInUserId = loggedInUserElem.getAttribute('data-user-id');
     const commuteEntryForm = document.getElementById('createNewCommuteForm');
-  
-    
+
+
     commuteEntryForm.addEventListener('submit', async (evt) => {
-  evt.preventDefault();
-  document.getElementById('createCommuteBtn').disabled = true;
-  document.getElementById('preLoader').style.display = 'block';
-  try {
-    const formData = new FormData();
-    formData.append('loggedInUserId', loggedInUserId);
-    formData.append('openingReadingKM', commuteEntryForm.openingReadingKM.value);
-    formData.append('openingReadingKMPhoto', commuteEntryForm.openingReadingKMPhoto.files[0]);
-    formData.append('closingReadingKM', commuteEntryForm.closingReadingKM.value);
-    formData.append('closingReadingKMPhoto', commuteEntryForm.closingReadingKMPhoto.files[0]);
-    formData.append('selphiPhoto', commuteEntryForm.selphiPhoto.files[0]);
-    formData.append('siteName', commuteEntryForm.siteName.value);
-    const res = await fetch('/createcommute', {
-      method: 'POST',
-      body: formData,
+      evt.preventDefault();
+      document.getElementById('createCommuteBtn').disabled = true;
+      document.getElementById('preLoader').style.display = 'block';
+      try {
+        const formData = new FormData();
+        formData.append('loggedInUserId', loggedInUserId);
+        formData.append('openingReadingKM', commuteEntryForm.openingReadingKM.value);
+        formData.append('openingReadingKMPhoto', commuteEntryForm.openingReadingKMPhoto.files[0]);
+        const res = await fetch('/createcommute', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await res.json();
+
+        if (data.error && parseInt(data.error.length) > 0) {
+          document.getElementById('showErratFirstEntryForm').style.display = 'block';
+          document.getElementById('logErratFirstEntryForm').innerText = data.error;
+        } else if (data.message !== 'Commute log created successfully') {
+          document.getElementById('createCommuteBtn').disabled = false;
+        } else if (data.message == 'Commute log created successfully') {
+          document.getElementById('createCommuteBtn').disabled = false;
+          commuteEntryForm.reset();
+          let elem = document.querySelector('#createNewCommuteModal');
+          M.Modal.init();
+          let instance = M.Modal.getInstance(elem);
+          instance.close();
+          location.assign('/consumerpage');
+        }
+      } catch (error) {
+        console.error(error);
+        document.getElementById('showErratFirstEntryForm').style.display = 'block';
+        document.getElementById('logErratFirstEntryForm').innerText = error.message;
+      }
     });
 
-    const data = await res.json();
-    if (data.message !== 'Commute log created successfully') {
-      document.getElementById('createCommuteBtn').disabled = false;
-      console.error(data.errors.message);
-    } else {
-      document.getElementById('createCommuteBtn').disabled = false;
-      commuteEntryForm.reset();
-      let elem = document.querySelector('#createNewCommuteModal');
-      M.Modal.init();
-      let instance = M.Modal.getInstance(elem);
-      instance.close();
-      location.assign('/consumerpage');
-    }
-  } catch (error) {
-    document.getElementById('createCommuteBtn').disabled = false;
-    console.error(error);
-  }
-});
+
+    const editeCommuteFormBtn = document.querySelectorAll('.editeCommuteFormBtn');
+    editeCommuteFormBtn.forEach(thatEntry => {
+      thatEntry.addEventListener('click', async (e) => {
+        const docId = event.target.getAttribute('data-doc-id-edit-commuteform');
+        const res = await fetch('/getuseravailablecommutedata', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ docId })
+        })
+        const data = await res.json();
+        const whatToOpen = data.result;
+        if (whatToOpen === 'openSefilModal') {
+          document.getElementById('editUploadSelfiPhoto').setAttribute('currDocId', data.logData._id);
+        } else if (whatToOpen === 'openClosingModal') {
+          document.getElementById('closingReadingKM').setAttribute('currDocId', data.logData._id);
+        }
+      });
+    });
+
+
+    const editCommuteForm = document.getElementById('editCommuteForm');
+    editCommuteForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      document.getElementById('editcreateCommuteBtn').disabled = true;
+      document.getElementById('editpreLoader').style.display = 'block';
+      const currDocId = document.getElementById('editUploadSelfiPhoto').getAttribute('currDocId')
+      try {
+        const formData = new FormData();
+        formData.append('currDocId', currDocId);
+        formData.append('siteName', editCommuteForm.siteName.value);
+        formData.append('selphiPhoto', editCommuteForm.editUploadSelfiPhoto.files[0]);
+        const res = await fetch('/uploadselfitothecurrdoc', {
+          method: 'POST',
+          body: formData,
+        });
+
+        // Check if the response is OK (status 200-299)
+        if (!res.ok) {
+          throw new Error(`Server error: ${res.status}`);
+        }
+
+        const data = await res.json();
+        if (data.message === 'Selfie uploaded successfully') {
+          document.getElementById('editcreateCommuteBtn').disabled = false;
+          document.getElementById('editpreLoader').style.display = 'none';
+          editCommuteForm.reset();
+          let elem = document.querySelector('#editCommuteModal');
+          M.Modal.init();
+          let instance = M.Modal.getInstance(elem);
+          instance.close();
+          location.assign('/consumerpage');
+        }
+      } catch (error) {
+        console.log(error);
+        document.getElementById('showErratEditEntryForm').style.display = 'block';
+        document.getElementById('logErratEditEntryForm').innerText = error.message;
+      }
+    });
 
 
 
+    const addClosingDataToCommuteForm = document.getElementById('addClosingDataToCommuteForm');
+    addClosingDataToCommuteForm.addEventListener('submit', async (evt) => {
+      evt.preventDefault();
+      document.getElementById('closingReadingCommuteBtn').disabled = true;
+      document.getElementById('closingpreLoader').style.display = 'block';
+      const currDocId = document.getElementById('closingReadingKM').getAttribute('currDocId')
+      try {
+        const formData = new FormData();
+        formData.append('currDocId', currDocId);
+        formData.append('closingReadingPhoto', addClosingDataToCommuteForm.closingReadingPhoto.files[0]);
+        formData.append('closingReadingVal', addClosingDataToCommuteForm.closingReadingKM.value);
+        const res = await fetch('/addclosingdatatocurrdoc', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await res.json();
+        if (data.message === 'Closing Data Uploaded Successfully') {
+          console.log('Closing Data Uploaded Successfully');
+          document.getElementById('closingReadingCommuteBtn').disabled = false;
+          document.getElementById('closingpreLoader').style.display = 'none';
+          addClosingDataToCommuteForm.reset();
+          let elem = document.querySelector('#addClosingDataToCommuteModal');
+          M.Modal.init();
+          let instance = M.Modal.getInstance(elem);
+          instance.close();
+          location.assign('/consumerpage');
+        } else if (data.message !== 'Closing Data Uploaded Successfully') {
+          console.log(data.message);
+          document.getElementById('showErrataddClosingDataToCommuteForm').style.display = 'block';
+          document.getElementById('logErrataddClosingDataToCommuteForm').innerText = error.message;
+        }
+      } catch (error) {
+        console.log(error);
+        // document.getElementById('showErrataddClosingDataToCommuteForm').style.display = 'block';
+        // document.getElementById('logErrataddClosingDataToCommuteForm').innerText = error.message;
+
+      }
+    });
 
 
-  
 
 
   </script>

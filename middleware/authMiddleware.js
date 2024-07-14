@@ -62,6 +62,23 @@ const checkUser = async (req, res, next) => {
         if (user.userRole === 'requester') {
             res.locals.commuteLogsForLoggedInUser = updatedLogs;
         } else if (user.userRole === 'approver') {
+            const queryOptions = {
+                approver: { decision: 'Pending At Approver' }
+            };
+    
+            const logsQuery = CommuteLog.find(queryOptions[user.userRole])
+                .sort({ timeStamp: -1 })
+                .limit(40)
+                .lean(); // Use lean() to improve query performance
+    
+            const logs = await logsQuery;
+    
+            const updatedLogs = logs.map(log => ({
+                ...log,
+                openingReadingKMPhotoUrl: log.openingReadingKMPhoto,
+                closingReadingKMPhotoUrl: log.closingReadingKMPhoto,
+                selphiPhotoUrl: log.selphiPhoto
+            }));
             res.locals.allcommuteLogs = updatedLogs;
         }
  

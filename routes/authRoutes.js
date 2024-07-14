@@ -10,6 +10,11 @@ router.get('/logout', authController.logout_get);
 router.get('/images/:id/:field', authController.serveImage_get);
 router.post('/createcommute', authController.createcommute_post);
 router.post('/approvecommute', authController.approvecommute_post);
+router.post('/getuseravailablecommutedata', authController.getuseravailablecommutedata_post);
+router.post('/uploadselfitothecurrdoc', authController.uploadselfitothecurrdoc_post);
+router.post('/addclosingdatatocurrdoc', authController.addclosingdatatocurrdoc_post);
+router.get('/getrequestersavailablemoney', authController.getrequestersavailablemoney_get);
+router.post('/addmoneytorequestersac', authController.addmoneytorequestersac_post);
 
 
 

@@ -31,6 +31,14 @@ const userSchema = new mongoose.Schema({
     ratePerKM: {
         type: Number,
         default: 2.3
+    },
+    lastTotalRunningKM: {
+        type: Number,
+        default: 0
+    },
+    presentlyAvailableAmount: {
+        type: Number,
+        default: 0
     }
 }, { collection: 'users' });  // Specify the collection name here
 

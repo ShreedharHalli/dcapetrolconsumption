@@ -1,3 +1,15 @@
+.card {
+    margin: 2px auto; /* Reduce the margin to 4px */
+}
+
+.row {
+    margin-bottom: 4px; /* Reduce the margin-bottom for rows */
+}
+
+.requesterTable {
+    margin-top: 4px; /* Reduce the margin-top for the second element */
+}
+
 .card-content {
     overflow-x: auto;
 }
@@ -20,8 +32,15 @@ table.responsive-table th, table.responsive-table td {
 }
 
 .card {
-    margin: 20px auto;
-    width: 95%; /* Adjust width to fit the card properly */
+    margin: 7px auto; /* Reduce the margin to 4px */
+}
+
+.row {
+    margin-bottom: 0.5px; /* Reduce the margin-bottom for rows */
+}
+
+.requesterTable {
+    margin-top: 2px; /* Reduce the margin-top for the second element */
 }
 
 @media screen and (max-width: 600px) {
@@ -34,6 +53,10 @@ table.responsive-table th, table.responsive-table td {
     }
 
     table.responsive-table tr {
-        margin-bottom: 15px; /* Add space between rows on small screens */
+        margin-bottom: 20px; /* Add space between rows on small screens */
     }
 }
+
+
+
+

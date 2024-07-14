@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const CommuteLog = require("../models/commuteLogs");
+const MoneyTransactions = require("../models/moneyTransactions");
 const jwt = require("jsonwebtoken");
 const path = require('path');
 const express = require('express');
@@ -58,7 +59,7 @@ module.exports.login_post = async (req, res) => {
         const user = await User.login(email, password);
         const token = createToken(user._id);
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
-        res.status(200).json({ user: user._id, email: user.email, userrole: user.userRole, username:  user.fullname});
+        res.status(200).json({ user: user._id, email: user.email, userrole: user.userRole, username: user.fullname });
     } catch (error) {
         const errors = handleErrors(error);
         console.log(error.message);
@@ -69,7 +70,7 @@ module.exports.login_post = async (req, res) => {
 
 module.exports.logout_get = (req, res) => {
     res.cookie('jwt', '', { maxAge: 1 });
-    res.redirect('/login'); 
+    res.redirect('/login');
 }
 
 module.exports.signup_post = async (req, res) => {
@@ -78,7 +79,7 @@ module.exports.signup_post = async (req, res) => {
         const user = await User.create({ fullname, email, password, userRole, assignedVehiclNo, ratePerKM });
         const token = createToken(user._id);
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
-        res.status(201).json({user: user._id});
+        res.status(201).json({ user: user._id });
     } catch (error) {
         // const errors = handleErrors(error);
         console.log(error.message);
@@ -93,50 +94,6 @@ module.exports.login_get = (req, res) => {
 module.exports.approver_get = (req, res) => {
     res.render("approverpage");
 };
-
-/* 
-module.exports.createcommute_post = async (req, res) => {
-    let { loggedInUserId, openingReadingKM, closingReadingKM, siteName } = req.body;
-    
-    // Fetch the logged-in user's name
-    const user = await User.findOne({ _id: loggedInUserId });
-    if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-    }
-    const loggedInUserName = user.fullname;
-    const vehicle = user.assignedVehiclNo;
-    const ratePerKM = parseFloat(user.ratePerKM);
-    const runningKM = (parseFloat(closingReadingKM) - parseFloat(openingReadingKM)).toFixed(2);
-    const amount = (runningKM * ratePerKM).toFixed(2);
-
-    const openingReadingKMPhoto = req.files.openingReadingKMPhoto.data;
-    const closingReadingKMPhoto = req.files.closingReadingKMPhoto.data;
-    const selphiPhoto = req.files.selphiPhoto.data;
-
-    try {
-        const commuteLog = new CommuteLog({
-            loggedInUser: loggedInUserId,
-            openingReadingKM,
-            openingReadingKMPhoto,
-            closingReadingKM,
-            closingReadingKMPhoto,
-            selphiPhoto,
-            siteName,
-            loggedInUserName,
-            vehicle,
-            ratePerKM,
-            runningKM,
-            amount
-        });
-        
-        await commuteLog.save();
-        res.status(200).json({ message: 'Commute log created successfully' });
-    } catch (error) {
-        console.log(`this is the error ${error.message}`);
-        res.status(400).json({ error: error.message });
-    }
-};
- */
 
 module.exports.serveImage_get = async (req, res) => {
     try {
@@ -163,14 +120,20 @@ module.exports.approvecommute_post = async (req, res) => {
     }
 
     try {
+        
         // Find the commute log by ID and update its decision field
         const commuteLog = await CommuteLog.findByIdAndUpdate(id, { decision: 'approved' }, { new: true });
+        // UPDATE USER DATA
+        const user = await User.findById(commuteLog.loggedInUser);
+        
+        const availableBalAtRequester = user.presentlyAvailableAmount;
+        const newAvailableBal = availableBalAtRequester - commuteLog.amount;
+        const updateUserData = await User.findByIdAndUpdate(commuteLog.loggedInUser, { 
+            lastTotalRunningKM: commuteLog.runningKM,
+            presentlyAvailableAmount: newAvailableBal
+         });
 
-        // Check if the commute log was found and updated
-        if (!commuteLog) {
-            return res.status(404).json({ error: 'Commute log not found' });
-        }
-
+         console.log(updateUserData)
         // Respond with a success message
         res.status(200).json({ message: 'Commute log approved successfully', commuteLog });
     } catch (error) {
@@ -194,10 +157,7 @@ if (!fs.existsSync(uploadDir)) {
 
 module.exports.createcommute_post = async (req, res) => {
     try {
-        const { loggedInUserId, openingReadingKM, closingReadingKM, siteName } = req.body;
-        if (parseInt(closingReadingKM) < parseInt(openingReadingKM)) {
-            return res.status(400).json({ message: 'Closing reading KM cannot be less than opening reading KM' });
-        } else {
+        const { loggedInUserId, openingReadingKM } = req.body;
         // Fetch the logged-in user's name
         const user = await User.findOne({ _id: loggedInUserId });
         if (!user) {
@@ -207,48 +167,32 @@ module.exports.createcommute_post = async (req, res) => {
         const loggedInUserName = user.fullname;
         const vehicle = user.assignedVehiclNo;
         const ratePerKM = parseFloat(user.ratePerKM);
-        const runningKM = (parseFloat(closingReadingKM) - parseFloat(openingReadingKM)).toFixed(2);
-        const amount = (runningKM * ratePerKM).toFixed(2);
 
-        if (!req.files || !req.files.openingReadingKMPhoto || !req.files.closingReadingKMPhoto || !req.files.selphiPhoto) {
+
+        if (!req.files || !req.files.openingReadingKMPhoto) {
             return res.status(400).json({ error: 'All photos are required' });
         }
 
         const openingReadingKMPhoto = req.files.openingReadingKMPhoto;
-        const closingReadingKMPhoto = req.files.closingReadingKMPhoto;
-        const selphiPhoto = req.files.selphiPhoto;
 
-         // Move files to uploads directory and get their paths and mimetypes
+        // Move files to uploads directory and get their paths and mimetypes
         const openingReadingKMPhotoData = await manageUploadedFile('create', openingReadingKMPhoto);
-        const closingReadingKMPhotoData = await manageUploadedFile('create', closingReadingKMPhoto);
-        const selphiPhotoData = await manageUploadedFile('create', selphiPhoto);
 
         // Example of uploading to a service like Google Drive (assuming `uploadFile` function exists)
         const openingReadingKMPhotoUpload = await uploadFile(openingReadingKMPhotoData.filePath, openingReadingKMPhotoData.mimetype);
-        const closingReadingKMPhotoUpload = await uploadFile(closingReadingKMPhotoData.filePath, closingReadingKMPhotoData.mimetype);
-        const selphiPhotoUpload = await uploadFile(selphiPhotoData.filePath, selphiPhotoData.mimetype);
 
         const commuteLog = new CommuteLog({
             loggedInUser: loggedInUserId,
             openingReadingKM,
-            openingReadingKMPhoto: openingReadingKMPhotoUpload.webContentLink, // Assuming this is the URL/path
-            closingReadingKM,
-            closingReadingKMPhoto: closingReadingKMPhotoUpload.webContentLink, // Assuming this is the URL/path
-            selphiPhoto: selphiPhotoUpload.webContentLink, // Assuming this is the URL/path
-            siteName,
+            openingReadingKMPhoto: openingReadingKMPhotoUpload.webContentLink,
             loggedInUserName,
             vehicle,
             ratePerKM,
-            runningKM,
-            amount
         });
 
         await commuteLog.save();
         await manageUploadedFile('delete', openingReadingKMPhoto);
-        await manageUploadedFile('delete', closingReadingKMPhoto);
-        await manageUploadedFile('delete', selphiPhoto);
         res.status(200).json({ message: 'Commute log created successfully' });
-    }
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: error.message });
@@ -291,3 +235,149 @@ function manageUploadedFile(action, file) {
         }
     });
 }
+
+
+module.exports.getuseravailablecommutedata_post = async (req, res) => {
+    try {
+        const docId = req.body.docId;
+        const currCommuteLog = await CommuteLog.findOne({ _id: docId });
+        if (currCommuteLog.selphiPhoto === '0' && currCommuteLog.closingReadingKM === 0) { // dont apply quotes at second zero
+            res.status(200).json({ result: 'openSefilModal', logData: currCommuteLog });
+        } else if (currCommuteLog.selphiPhoto !== '0' && currCommuteLog.closingReadingKM === 0) {
+            res.status(200).json({ result: 'openClosingModal', logData: currCommuteLog });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+module.exports.uploadselfitothecurrdoc_post = async (req, res) => {
+    try {
+        const { currDocId, siteName } = req.body;
+        if (!req.files || !req.files.selphiPhoto) {
+            return res.status(400).json({ error: 'All photos are required' });
+        }
+
+
+        const currCommuteLog = await CommuteLog.findOne({ _id: currDocId });
+        if (!currCommuteLog) {
+            return res.status(404).json({ error: 'Commute log not found' });
+        }
+
+        const uploadedSelphiPhoto = req.files.selphiPhoto;
+        // Move files to uploads directory and get their paths and mimetypes
+        const uploadedSelphiPhotoData = await manageUploadedFile('create', uploadedSelphiPhoto);
+        // Example of uploading to a service like Google Drive (assuming `uploadFile` function exists)
+        const webLink = await uploadFile(uploadedSelphiPhotoData.filePath, uploadedSelphiPhotoData.mimetype);
+        const result = await CommuteLog.updateOne({ _id: currDocId }, {
+            $set: {
+                selphiPhoto: webLink.webContentLink,
+                siteName: siteName
+            }
+        });
+        res.status(200).json({ message: 'Selfie uploaded successfully' });
+        await manageUploadedFile('delete', uploadedSelphiPhoto);
+    } catch (error) {
+        console.log(error.message, 'line no 270');
+        res.status(500).json({ error: error.message });
+    }
+}
+
+
+module.exports.addclosingdatatocurrdoc_post = async (req, res) => {
+    try {
+        const { currDocId, closingReadingVal } = req.body;
+
+        if (!req.files || !req.files.closingReadingPhoto) {
+            return res.status(400).json({ error: 'All photos are required' });
+        }
+
+        const uploadclosingReadingPhoto = req.files.closingReadingPhoto;
+
+        const localClosingPhoto = await manageUploadedFile('create', uploadclosingReadingPhoto);
+        const webLink = await uploadFile(localClosingPhoto.filePath, localClosingPhoto.mimetype);
+        const currCommuteLog = await CommuteLog.findOne({ _id: currDocId });
+        if (!currCommuteLog) {
+            return res.status(404).json({ error: 'Commute log not found' });
+        }
+
+        const openingReadingKMVal = parseInt(currCommuteLog.openingReadingKM);
+        if (parseInt(closingReadingVal).length === openingReadingKMVal.length) {
+            if (parseInt(closingReadingVal) > openingReadingKMVal) {
+                const totatRunningKM = closingReadingVal - openingReadingKMVal;
+                const result = await CommuteLog.updateOne({ _id: currDocId }, {
+                    $set: {
+                        closingReadingKM: closingReadingVal,
+                        closingReadingKMPhoto: webLink.webContentLink,
+                        runningKM: parseFloat(totatRunningKM).toFixed(2),
+                        amount: parseFloat(totatRunningKM * currCommuteLog.ratePerKM).toFixed(2),
+                        decision: 'Pending At Approver'
+                    }
+                });
+                res.status(200).json({ message: 'Closing Data Uploaded Successfully' });
+                await manageUploadedFile('delete', uploadclosingReadingPhoto);
+            } else {
+                res.status(400).json({ message: 'Closing Reading KM should be greater than Opening Reading KM' });
+            }
+        } else {
+            res.status(400).json({ message: 'Closing Reading KM should be of same length as Opening Reading KM' });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+module.exports.getrequestersavailablemoney_get = async (req, res) => {
+    // GET ALL THE USER DETAILS
+    try {
+        const allUser = await User.find();
+        res.status(200).json({ allUser });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+
+module.exports.addmoneytorequestersac_post = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        const { moneyIssuedUsersOnly } = req.body;
+
+        const bulkOps = moneyIssuedUsersOnly.map((item) => ({
+            updateOne: {
+                filter: { _id: item.userId },
+                update: {
+                    $inc: { presentlyAvailableAmount: parseInt(item.amountGiven) },
+                    $set: { amountGivenDt: new Date(item.amountGivenDt) }
+                }
+            }
+        }));
+
+        const result = await User.bulkWrite(bulkOps, { session });
+
+        const moneyTransactionDocs = moneyIssuedUsersOnly.map((item) => ({
+            userDocId: item.userId,
+            amountGiven: parseInt(item.amountGiven),
+            amountGivenDt: item.amountGivenDt
+        }));
+
+        await MoneyTransactions.insertMany(moneyTransactionDocs, { session });
+
+        await session.commitTransaction();
+        session.endSession();
+
+        res.status(200).json({ message: 'Users updated and transactions recorded successfully', result });
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+};

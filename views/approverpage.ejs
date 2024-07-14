@@ -25,6 +25,8 @@
     </li>
     <!-- <li><a href="#!"><i class="material-icons">business</i>D C AJMERA</a></li> -->
     <li><a href="#createNewCommuteModal" class="modal-trigger">New Entry</a></li>
+    <li><a href="#addMoneyToRequestersAcModal" class="modal-trigger" id="addMoneyToRequestersAc">Add Money To Requesters
+        A/c</a></li>
     <li>
       <div class="divider"></div>
     </li>
@@ -116,42 +118,78 @@
     </div>
   </div>
 
+
+  <!-- ADD MONEY TO REQUESTER MODAL -->
+  <div id="addMoneyToRequestersAcModal" class="modal" style="width: 90%;">
+    <div class="modal-content">
+      <h6 class="center">Add Money To Requesters Account</h6>
+      <div class="row">
+        <form class="col s12" id="addMoneyToRequestersAcForm">
+          <div class="row">
+            <div class="col s12 m6">
+              <div class="row" id="userCardsContainer">
+                <!-- User cards will be appended here dynamically -->
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s12 center-align">
+              <button id="" class="waves-effect waves-light btn teal darken-4">Submit</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+
+
   <div class="commuteRequestForApprover" style="margin-top: 30px;">
     <div class="row">
       <div class="col s12 m6">
         <ul class="collapsible popout z-depth-5">
-          <% if (allcommuteLogs !== '') { %>
-            <% allcommuteLogs.forEach((elem, index) => { %>
+          <% if (allcommuteLogs && allcommuteLogs.length> 0) { %>
+            <% allcommuteLogs.forEach((elem, index)=> { %>
               <li>
-                <div class="collapsible-header"><i class="material-icons">place</i><%= elem.loggedInUserName %></div>
-                <div class="collapsible-body"><span>Date & Time : <%= elem.timeStamp.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }); %></span></div>
+                <div class="collapsible-header"><i class="material-icons">place</i>
+                  <%= elem.loggedInUserName %>
+                </div>
+                <div class="collapsible-body"><span>Date & Time : <%= elem.timeStamp.toLocaleString('en-US', {
+                      timeZone: 'Asia/Kolkata' }); %></span></div>
                 <div class="collapsible-body"><span>Opening Reading : <%= elem.openingReadingKM %> %></span></div>
-                <div class="collapsible-body"><span>Opening Reading Photo : <a href="<%= elem.openingReadingKMPhotoUrl %>" target="_blank">View Opening Reading KM Photo</a></span></div>
+                <div class="collapsible-body"><span>Opening Reading Photo : <a
+                      href="<%= elem.openingReadingKMPhotoUrl %>" target="_blank">View Opening Reading KM
+                      Photo</a></span></div>
                 <div class="collapsible-body"><span>Closing Reading : <%= elem.closingReadingKM %></span></div>
-                <div class="collapsible-body"><span>Closing Reading Photo : <a href="<%= elem.closingReadingKMPhotoUrl %>" target="_blank">View Closing Reading KM Photo</a></span></div>
-                <div class="collapsible-body"><span>Selfie : <a href="<%= elem.selphiPhotoUrl %>" target="_blank">View Selfie Photo</a></span></div>
+                <div class="collapsible-body"><span>Closing Reading Photo : <a
+                      href="<%= elem.closingReadingKMPhotoUrl %>" target="_blank">View Closing Reading KM
+                      Photo</a></span></div>
+                <div class="collapsible-body"><span>Selfie : <a href="<%= elem.selphiPhotoUrl %>" target="_blank">View
+                      Selfie Photo</a></span></div>
                 <div class="collapsible-body"><span>Site Name : <%= elem.siteName %></span></div>
-                <div class="collapsible-body"><span>Commute Reason : <%= elem.commuteReason %></span></div>
                 <div class="collapsible-body"><span>Running KM : <%= elem.runningKM %></span></div>
-                <div class="collapsible-body"><span>Remarks : <%= elem.visitRemarks %></span></div>
                 <div class="collapsible-body"><span>Decision : <%= elem.decision %></span></div>
-                <div class="collapsible-body center"><a class="waves-effect waves-light btn-large approveBtn" docid="<%= elem._id %>">Approve</a></span></div>
-                <div class="collapsible-body center"><a class="waves-effect red waves-light btn-large" id="denyBtn" docid="<%= elem._id %>">Deny</a></span></div>
+                <div class="collapsible-body center"><a class="waves-effect waves-light btn-large approveBtn"
+                    docid="<%= elem._id %>">Approve</a></span></div>
+                <div class="collapsible-body center"><a class="waves-effect red waves-light btn-large" id="denyBtn"
+                    docid="<%= elem._id %>">Deny</a></span></div>
               </li>
-            <% }) %>
-          <% } else { %>
-            <li>
-              <div class="collapsible-header"><i class="material-icons">error</i>No Requests Found</div>
-            </li>
-          <% } %>
+              <% }) %>
+                <% } else { %>
+                  <li>
+                    <div class="collapsible-header"><i class="material-icons">error</i>No Requests Found</div>
+                  </li>
+                  <% } %>
         </ul>
       </div>
     </div>
   </div>
 
 
-  
-  
+
+
+
 
 
 
@@ -189,27 +227,137 @@
     approveBtn.forEach(btnForThatDoc => {
       btnForThatDoc.addEventListener('click', async () => {
         const docid = btnForThatDoc.getAttribute('docid');
-        console.log(docid);
         try {
           const res = await fetch('/approvecommute', {
-          method: 'POST',
-          headers: {
-          'Content-Type': 'application/json'
-        },
-          body: JSON.stringify( { id : docid })
-        });
-        const data = await res.json();
-        if (data.message === 'Commute log approved successfully') {
-          location.assign('/approverpage')
-        } else {
-          console.log(data);
-        }
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: docid })
+          });
+          const data = await res.json();
+          if (data.message === 'Commute log approved successfully') {
+            location.assign('/approverpage')
+          } else {
+            console.log(data);
+          }
         } catch (error) {
           console.log(error);
         }
-        
+
       });
     });
+
+    const addMoneyToRequestersAcBtn = document.getElementById('addMoneyToRequestersAc');
+    addMoneyToRequestersAcBtn.addEventListener('click', async (event) => {
+      try {
+        const res = await fetch('/getrequestersavailablemoney', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const data = await res.json();
+        const userCardsContainer = document.getElementById('userCardsContainer');
+        userCardsContainer.innerHTML = ''; // Clear existing cards
+        if (data.allUser.length > 0) {
+          data.allUser.forEach(user => {
+            const userCard = document.createElement('div');
+            userCard.className = 'col s12 m6';
+            userCard.innerHTML = `
+                <div class="card blue-grey darken-1">
+                <div class="card-content white-text">
+                  <span class="card-title">${user.fullname}</span>
+                  <p>Total Running KM: ${user.lastTotalRunningKM} KM <br> Balance Amount: Rs. ${user.presentlyAvailableAmount}</p>
+                </div>
+                <div class="card-action">
+                  <div class="input-field">
+                    <input name="amountGiven_${user._id}" id="amountGiven_${user._id}" type="number" class="validate amountCredited">
+                    <label for="amountGiven_${user._id}">Amount To Be Credited</label>
+                  </div>
+                  <div class="input-field">
+                    <input name="amountGivenDt_${user._id}" id="amountGivenDt_${user._id}" type="text" class="validate datepicker">
+                    <label for="amountGivenDt_${user._id}">Date</label>
+                  </div>
+                </div>
+              </div>
+            `;
+            userCardsContainer.appendChild(userCard);
+
+            // Initialize datepicker
+            const dateElems = document.querySelectorAll(`#amountGivenDt_${user._id}`);
+            M.Datepicker.init(dateElems, { format: 'dd-mm-yyyy' })
+          });
+
+        } else {
+          console.log('unable to fetch use data')
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+
+    const addMoneyToRequestersAcForm = document.getElementById('addMoneyToRequestersAcForm');
+addMoneyToRequestersAcForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const elems = document.querySelectorAll('.amountCredited');
+  const moneyIssuedUsersOnly = [];
+
+  elems.forEach((elem) => {
+    const userId = elem.id.replace('amountGiven_', ''); // Extract user ID from element ID
+    const amountGiven = elem.value; // Get the amount input value
+    const dateElem = document.getElementById(`amountGivenDt_${userId}`);
+    const amountGivenDt = dateElem.value; // Get the date input value
+
+    if (parseInt(amountGiven) > 0) {
+      moneyIssuedUsersOnly.push({ amountGivenDt, amountGiven, userId });
+    }
+  });
+
+  try {
+    const res = await fetch('/addmoneytorequestersac', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ moneyIssuedUsersOnly })
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    if (data.message === 'Users updated and transactions recorded successfully') {
+      // Reset all input fields
+      elems.forEach((elem) => {
+        elem.value = '';
+      });
+
+      // Reset date input fields
+      moneyIssuedUsersOnly.forEach((item) => {
+        const dateElem = document.getElementById(`amountGivenDt_${item.userId}`);
+        if (dateElem) {
+          dateElem.value = '';
+        }
+      });
+
+      // Close the modal (using Materialize CSS)
+      const modalElement = document.getElementById('addMoneyToRequestersAcModal');
+      const instance = M.Modal.getInstance(modalElement);
+      instance.close();
+    } else {
+      console.log(data.message);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+});
+
+
+
 
 
 

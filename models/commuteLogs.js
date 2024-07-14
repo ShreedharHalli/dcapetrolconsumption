@@ -21,19 +21,19 @@
     },
     closingReadingKM: {
         type: Number,
-        required: true
+        default: 0
     },
     closingReadingKMPhoto: {
         type: String, // Store as String (path or URL to the photo)
-        required: true
+        default: 0
     },
     selphiPhoto: {
         type: String, // Store as String (path or URL to the photo)
-        required: true
+        default: 0
     },
     siteName: {
         type: String,
-        required: true
+        default: 0
     },
     loggedInUserName: {
         type: String,
@@ -49,16 +49,16 @@
     },
     runningKM: {
         type: Number,
-        required: true
+        default: 0
     },
     amount: {
         type: Number,
-        required: true
+        default: 0
     },
     decision: {
         type: String,
         required: true,
-        default: 'pending...'
+        default: 'Pending At Requester'
     }
 });
 
