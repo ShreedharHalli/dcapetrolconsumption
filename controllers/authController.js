@@ -10,7 +10,9 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const { google } = require('googleapis');
 const { promisify } = require('util');
+const axios = require('axios');
 const mv = promisify(require('mv'));
+
 
 
 // handle errors
@@ -133,14 +135,57 @@ module.exports.approvecommute_post = async (req, res) => {
             presentlyAvailableAmount: newAvailableBal
          });
 
-         console.log(updateUserData)
+        //  console.log(updateUserData)
         // Respond with a success message
         res.status(200).json({ message: 'Commute log approved successfully', commuteLog });
+        const webhookURL = "https://script.google.com/macros/s/AKfycbwaOCQSQ_VCBLbX_fqxXU33MdBs6XfHUEvUksiZdT8Wzw4E37pV5iVODc9pGmadsEjC/exec"
+        try {
+          await axios.post(webhookURL, JSON.stringify(commuteLog));
+        } catch (error) {
+          console.log(error);
+          console.log(error.message);
+        }
     } catch (error) {
         // Handle errors and respond with an error message
         res.status(400).json({ error: error.message });
     }
 };
+
+
+
+/* 
+ client.on('message', async (msg) => {
+          console.log('one message event is fired');
+          // Call webhook here
+          const { body, from, fromMe, id, to } = msg;
+          const connectedWhatsappNo = to.replace(/@c\.us$/, '');
+          const object = {
+            msgBody: body,
+            msgFrom: from.replace(/@c\.us$/, ''),
+            msgFromMe: fromMe,
+            msgId: id.id,
+          };
+          console.log(`on message event is fired: ${msg.body}`);
+          console.log(`server wa no is: ${connectedWhatsappNo}`);
+          const currentDoc = await User.findOne({ connectedWhatsappNo });
+          console.log(currentDoc);
+          if (currentDoc && currentDoc.webHookUrl !== 'nowebhook') {
+            const webhookURL = currentDoc.webHookUrl;
+            try {
+              console.log(webhookURL);
+              await axios.post(webhookURL, JSON.stringify(object));
+            } catch (error) {
+              console.log(error);
+              console.log(error.message);
+            }
+          } else {
+            return;
+            
+          }
+        });
+
+
+*/
 
 
 
