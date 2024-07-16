@@ -315,7 +315,7 @@
         <form class="col s12" id="ediFullCommuteForm">
           <div class="row">
             <div class="input-field col s12">
-              <input name="ediFullopeningReadingKM" id="ediFullopeningReadingKM" type="number" class="validate" step="0.01" required>
+              <input name="ediFullopeningReadingKM" id="ediFullopeningReadingKM" type="number" class="validate" placeholder="Placeholder" step="0.01" required>
               <!--required -->
               <label for="ediFullopeningReadingKM">चालू रिडींग</label>
               <div class="ediFullopeningReadingKM-error"></div>
@@ -337,9 +337,9 @@
 
           <div class="row">
             <div class="input-field col s12">
-              <input name="siteName" id="siteName" type="text" class="validate" required> <!--required -->
-              <label for="siteName">Site Name</label>
-              <div class="siteName-error"></div>
+              <input name="ediFullsiteName" id="ediFullsiteName" type="text" class="validate" placeholder="Placeholder" required> <!--required -->
+              <label for="ediFullsiteName">Site Name</label>
+              <div class="ediFullsiteName-error"></div>
             </div>
           </div>
 
@@ -347,7 +347,7 @@
             <div class="right-align">
               <div class="btn teal darken-4">
                 <span><i class="Medium material-icons">attach_file</i></span>
-                <input id="editUploadSelfiPhoto" type="file" accept="image/*" required>
+                <input id="ediFulleditUploadSelfiPhoto" type="file" accept="image/*" required>
               </div>
               <div class="file-path-wrapper">
                 <input class="file-path validate" type="text">
@@ -358,10 +358,10 @@
 
           <div class="row">
             <div class="input-field col s12">
-              <input name="closingReadingKM" id="closingReadingKM" type="number" class="validate" step="0.01" required>
+              <input name="ediFullclosingReadingKM" id="ediFullclosingReadingKM" type="number" class="validate" placeholder="Placeholder" step="0.01" required>
               <!--required -->
-              <label for="closingReadingKM">बंद रिडींग</label>
-              <div class="closingReadingKM-error"></div>
+              <label for="ediFullclosingReadingKM">बंद रिडींग</label>
+              <div class="ediFullclosingReadingKM-error"></div>
             </div>
           </div>
 
@@ -369,10 +369,10 @@
             <div class="right-align">
               <div class="btn teal darken-4">
                 <span><i class="Medium material-icons">attach_file</i></span>
-                <input id="closingReadingPhoto" type="file" accept="image/*" required>
+                <input id="ediFullclosingReadingPhoto" type="file" accept="image/*" required>
               </div>
               <div class="file-path-wrapper">
-                <label for="closingReadingPhoto" style="margin-right: 60px;">बंद रिडींग फोटो</label>
+                <label for="ediFullclosingReadingPhoto" style="margin-right: 60px;">बंद रिडींग फोटो</label>
                 <input class="file-path validate" type="text">
               </div>
             </div>
@@ -465,7 +465,10 @@
         } else if (whatToOpen === 'openClosingModal') {
           document.getElementById('closingReadingKM').setAttribute('currDocId', data.logData._id);
         } else if (whatToOpen === 'showFullEditForm') {
-          document.getElementById('closingReadingKM').setAttribute('currDocId', data.logData._id);
+          document.getElementById('ediFullopeningReadingKM').setAttribute('currDocId', data.logData._id);
+          document.getElementById('ediFullopeningReadingKM').value = data.logData.openingReadingKM;
+          document.getElementById('ediFullsiteName').value = data.logData.siteName;
+          document.getElementById('ediFullclosingReadingKM').value = data.logData.closingReadingKM;
         }
       });
     });

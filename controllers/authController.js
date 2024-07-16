@@ -254,6 +254,8 @@ module.exports.getuseravailablecommutedata_post = async (req, res) => {
     }
 };
 
+
+
 module.exports.uploadselfitothecurrdoc_post = async (req, res) => {
     try {
         const { currDocId, siteName } = req.body;
