@@ -19,6 +19,10 @@ const moneyTransactionSchema = new mongoose.Schema({
        type: String, // Store as String (path or URL to the photo)
        required: true
    },
+   paymentMode: {
+    type: String, // Store as String (path or URL to the photo)
+    required: true
+},
 });
 
 // fire a function after doc saved to db

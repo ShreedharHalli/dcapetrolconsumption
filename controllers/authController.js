@@ -125,11 +125,11 @@ module.exports.approvecommute_post = async (req, res) => {
         const commuteLog = await CommuteLog.findByIdAndUpdate(id, { decision: 'approved' }, { new: true });
         // UPDATE USER DATA
         const user = await User.findById(commuteLog.loggedInUser);
-        
+        const newlastTotalRunningKM = commuteLog.runningKM + user.lastTotalRunningKM
         const availableBalAtRequester = user.presentlyAvailableAmount;
         const newAvailableBal = availableBalAtRequester - commuteLog.amount;
         const updateUserData = await User.findByIdAndUpdate(commuteLog.loggedInUser, { 
-            lastTotalRunningKM: commuteLog.runningKM,
+            lastTotalRunningKM: newlastTotalRunningKM,
             presentlyAvailableAmount: newAvailableBal
          });
 
@@ -245,6 +245,8 @@ module.exports.getuseravailablecommutedata_post = async (req, res) => {
             res.status(200).json({ result: 'openSefilModal', logData: currCommuteLog });
         } else if (currCommuteLog.selphiPhoto !== '0' && currCommuteLog.closingReadingKM === 0) {
             res.status(200).json({ result: 'openClosingModal', logData: currCommuteLog });
+        } else if (currCommuteLog.selphiPhoto !== '0' && currCommuteLog.closingReadingKM !== 0) {
+            res.status(200).json({ result: 'showFullEditForm', logData: currCommuteLog });
         }
     } catch (error) {
         console.error('Error:', error);
@@ -301,9 +303,11 @@ module.exports.addclosingdatatocurrdoc_post = async (req, res) => {
         if (!currCommuteLog) {
             return res.status(404).json({ error: 'Commute log not found' });
         }
-
+        const openingReading = currCommuteLog.openingReadingKM;
+        const lenghtOfOpeningReading = openingReading.toString().length;
+        const lenghtOfClosingReading = closingReadingVal.toString().length;
         const openingReadingKMVal = parseInt(currCommuteLog.openingReadingKM);
-        if (parseInt(closingReadingVal).length === openingReadingKMVal.length) {
+         if (lenghtOfClosingReading === lenghtOfOpeningReading) {
             if (parseInt(closingReadingVal) > openingReadingKMVal) {
                 const totatRunningKM = closingReadingVal - openingReadingKMVal;
                 const result = await CommuteLog.updateOne({ _id: currDocId }, {
@@ -365,7 +369,8 @@ module.exports.addmoneytorequestersac_post = async (req, res) => {
         const moneyTransactionDocs = moneyIssuedUsersOnly.map((item) => ({
             userDocId: item.userId,
             amountGiven: parseInt(item.amountGiven),
-            amountGivenDt: item.amountGivenDt
+            amountGivenDt: item.amountGivenDt,
+            paymentMode: item.paymentMode
         }));
 
         await MoneyTransactions.insertMany(moneyTransactionDocs, { session });
@@ -373,7 +378,8 @@ module.exports.addmoneytorequestersac_post = async (req, res) => {
         await session.commitTransaction();
         session.endSession();
 
-        res.status(200).json({ message: 'Users updated and transactions recorded successfully', result });
+        // res.status(200).json({ message: 'Users updated and transactions recorded successfully', result });
+        res.status(200).json({ message: 'Users updated and transactions recorded successfully'});
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
