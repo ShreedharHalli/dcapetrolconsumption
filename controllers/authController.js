@@ -152,6 +152,31 @@ module.exports.approvecommute_post = async (req, res) => {
 };
 
 
+module.exports.denycommute_post = async (req, res) => {
+    const { id } = req.body;
+    // Check if id is provided in the request body
+    if (!id) {
+        return res.status(400).json({ error: 'ID is required' });
+    }
+
+    try {
+        
+        // Find the commute log by ID and update its decision field
+        const commuteLog = await CommuteLog.findByIdAndUpdate(id, { decision: 'denied' }, { new: true });
+        
+
+        //  console.log(updateUserData)
+        // Respond with a success message
+        res.status(200).json({ message: 'Commute log denied successfully', commuteLog });
+        
+    } catch (error) {
+        // Handle errors and respond with an error message
+        res.status(400).json({ error: error.message });
+    }
+};
+
+
+
 
 /* 
  client.on('message', async (msg) => {

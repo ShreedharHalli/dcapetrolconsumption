@@ -172,7 +172,7 @@
                 <div class="collapsible-body"><span>Decision : <%= elem.decision %></span></div>
                 <div class="collapsible-body center"><a class="waves-effect waves-light btn-large approveBtn"
                     docid="<%= elem._id %>">Approve</a></span></div>
-                <div class="collapsible-body center"><a class="waves-effect red waves-light btn-large" id="denyBtn"
+                <div class="collapsible-body center"><a class="waves-effect red waves-light btn-large denyBtn"
                     docid="<%= elem._id %>">Deny</a></span></div>
               </li>
               <% }) %>
@@ -247,6 +247,34 @@
 
       });
     });
+
+    const denyBtn = document.querySelectorAll('.denyBtn');
+    denyBtn.forEach(btnForThatDoc => {
+      btnForThatDoc.addEventListener('click', async () => {
+        const docid = btnForThatDoc.getAttribute('docid');
+        console.log(docid);
+        try {
+          const res = await fetch('/denycommute', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: docid })
+          });
+          const data = await res.json();
+          if (data.message === 'Commute log denied successfully') {
+            location.assign('/approverpage')
+          } else {
+            console.log(data);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+
+      });
+    });
+
+
 
     const addMoneyToRequestersAcBtn = document.getElementById('addMoneyToRequestersAc');
 addMoneyToRequestersAcBtn.addEventListener('click', async (event) => {
