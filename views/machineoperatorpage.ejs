@@ -1,0 +1,370 @@
+<%- include('partials/header'); -%>
+  <nav>
+    <div class="nav-wrapper blue-grey darken-1 z-depth-5">
+      <a href="#" class="brand-logo">D C AJMERA</a>
+      <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <a href="#createNewCommuteModal" class="modal-trigger btn teal darken-1">New Entry</a>
+        <a class="btn teal darken-1" href="badges.html">Components</a>
+        <a class="btn red darken-4 z-depth-5" href="/logout">Log Out</a>
+      </ul>
+    </div>
+  </nav>
+
+  <ul id="slide-out" class="sidenav">
+    <li>
+      <div class="user-view">
+        <div class="background">
+          <img src="/dcalogo.jpeg">
+        </div>
+        <a id="userIdElem" href="#name" data-user-id="<%= user._id %>"><span class="white-text name">
+            <%= `Welcome, ${user.fullname}` %>
+          </span></a>
+        <!-- <a href="#email"><span class="white-text email"></span></a> -->
+      </div>
+    </li>
+    <!-- <li><a href="#!"><i class="material-icons">business</i>D C AJMERA</a></li> -->
+    <li><a href="#createNewWorkingHrsTransactionModal" class="modal-trigger">New Entry</a></li>
+    <li>
+      <div class="divider"></div>
+    </li>
+    <li><a class="disabled" href="">Components</a></li>
+    <li><a href="/logout">Log Out</a></li>
+  </ul>
+
+
+
+
+  <div class="row">
+    <div class="col s12 m12">
+      <div class="card blue-grey darken-1 z-depth-5">
+        <div class="card-content white-text">
+          <table class="responsive-table valign-wrapper">
+            <thead class="left" style="margin-left: -35px;">
+              <tr>
+                <th>Date & Time</th>
+                <th>Machine ID</th>
+                <th>Opening Photo</th>
+                <th>Opening Reading</th>
+                <th>Closing Photo</th>
+                <th>Closing Reading</th>
+                <th>Running KM</th>
+                <th>Add Closing</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (workingHoursLogs && workingHoursLogs.length > 0) { %>
+                <% workingHoursLogs.forEach((elem, index) => { %>
+                  <tr>
+                    <td>
+                      <% 
+                        const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' };
+                        const formattedDate = new Date(elem.timeStamp).toLocaleString('en-GB', options).replace(',', ''); 
+                      %>
+                      <%= formattedDate %>
+                    </td>
+                    <td><%= elem.workingHoursMachineId %></td>
+                    <td>
+                      <% if (elem.workingHoursOpeningReadingKMPhoto !== '0') { %>
+                        <a href="<%= elem.workingHoursOpeningReadingKMPhoto %>" target="_blank">Opening Reading Photo</a>
+                      <% } else { %>
+                        No Opening Reading KM Photo
+                      <% } %>
+                    </td>
+                    <td><%= elem.workingHoursOpeningReadingKM %></td>
+                    <td>
+                      <% if (elem.workingHoursclosingReadingPhoto !== '0') { %>
+                        <a href="<%= elem.workingHoursclosingReadingPhoto %>" target="_blank">Closing Reading Photo</a>
+                      <% } else { %>
+                        --
+                      <% } %>
+                    </td>
+                    <td><%= elem.workingHoursclosingReadingKM %></td>
+                    <td><%= elem.runningKM %></td>
+                    <td>
+                      <% if (elem._id !== '0') { %>
+                        <% if (elem.workingHoursclosingReadingPhoto === '0') { %>
+                          <button href="#addClosingDataToWorkingHourLogsModal" data-doc-id-edit-workinghours="<%= elem._id %>" class="addClosingDataToWorkingHourLogsBtn modal-trigger waves-effect waves-light btn teal darken-4">Add Closing</button>
+                        <% } else { %>
+                          <button href="#addClosingDataToWorkingHourLogsModal" data-doc-id-edit-workinghours="<%= elem._id %>" class="addClosingDataToWorkingHourLogsBtn modal-trigger waves-effect waves-light btn teal darken-4 disabled">Add Closing</button>
+                        <% } %>
+                      <% } else { %>
+                        --
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <th><i class="material-icons">error</i>Data Not Found</th>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-action" style="margin-top: -10px;">
+          <div class="row">
+            <div class="col s12 center-align">
+              <button href="#createNewWorkingHrsTransactionModal" class="modal-trigger waves-effect waves-light btn teal darken-4 z-depth-5">Make New Entry</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+
+
+
+
+
+  <!-- CREATE WORKING HOURS TRANSACTION MODAL -->
+  <div id="createNewWorkingHrsTransactionModal" class="modal">
+    <div class="modal-content">
+      <h6 class="center">Enter New Working Hours</h6>
+      <div class="row">
+        <form class="col s12" id="createNewWorkingHrsTransactionForm">
+          <div class="input-field col s12">
+            <select id="createNewWorkingHrsTransactionMachineId" class="black-text darken-4" required>
+              <option value="" disabled selected></option>
+              <option value="J-1">J-1</option>
+              <option value="GD-1">GD-1</option>
+              <option value="GD-2">GD-2</option>
+              <option value="GD-3">GD-3</option>
+              <option value="J-2">J-2</option>
+              <option value="J-3">J-3</option>
+              <option value="J-4">J-4</option>
+              <option value="J-5">J-5</option>
+              <option value="LD-1">LD-1</option>
+              <option value="LD-2">LD-2</option>
+              <option value="LD-3">LD-3</option>
+              <option value="LD-4">LD-4</option>
+              <option value="LD-5">LD-5</option>
+              <option value="P-1">P-1</option>
+              <option value="P-2">P-2</option>
+              <option value="P-3">P-3</option>
+              <option value="P-4">P-4</option>
+              <option value="P-5">P-5</option>
+              <option value="P-6">P-6</option>
+              <option value="P-7">P-7</option>
+              <option value="P-8">P-8</option>
+              <option value="PV-1">PV-1</option>
+              <option value="PV-2">PV-2</option>
+              <option value="PV-3">PV-3</option>
+              <option value="PV-4">PV-4</option>
+              <option value="R-1">R-1</option>
+              <option value="R-2">R-2</option>
+              <option value="R-3">R-3</option>
+              <option value="R-4">R-4</option>
+              <option value="R-5">R-5</option>
+              <option value="R-6">R-6</option>
+              <option value="R-7">R-7</option>
+            </select>
+            <label for="createNewWorkingHrsTransactionMachineId">Select Machine</label>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="createNewWorkingHrsTransactionopeningReadingKM"
+                id="createNewWorkingHrsTransactionopeningReadingKM" type="number" class="validate" step="0.01" required>
+              <!--required -->
+              <label for="createNewWorkingHrsTransactionopeningReadingKM">Opening Reading</label>
+            </div>
+          </div>
+
+          <div class="file-field input-field col s12" style="margin-left: -15px;">
+            <div class="right-align">
+              <div class="btn teal darken-4">
+                <span><i class="Medium material-icons">attach_file</i></span>
+                <input id="createNewWorkingHrsTransactionopeningReadingKMPhoto" type="file" accept="image/*" required>
+              </div>
+              <div class="file-path-wrapper">
+                <label for="createNewWorkingHrsTransactionopeningReadingKMPhoto" style="margin-right: 60px;"
+                  currDocId="">Opening Photo</label>
+                <input class="file-path validate" type="text">
+              </div>
+            </div>
+          </div>
+
+
+          <div class="progress" id="createNewWorkingHrsTransactionPreloader" style="display: none;">
+            <div class="indeterminate"></div>
+          </div>
+
+          <div class="row">
+            <div class="col s12 center-align">
+              <button id="createNewWorkingHrsTransactionshowErratFirstEntryBtn"
+                class="waves-effect waves-light btn teal darken-4">Submit</button>
+            </div>
+          </div>
+
+          <div class="row" id="createNewWorkingHrsTransactionshowErratFirstEntryDiv" style="display: none;">
+            <div class=" s12 center-align">
+              <p id="createNewWorkingHrsTransactionlogErratFirstEntryForm" class="red"></p>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+   <!-- ADD CLOSING DETAILS MODAL -->
+   <div id="addClosingDataToWorkingHourLogsModal" class="modal">
+    <div class="modal-content">
+      <h4 class="center">Add Closing Details</h4>
+      <div class="row">
+        <form class="col s12" id="addClosingDataToWorkingHourLogsForm">
+
+          <div class="row">
+            <div class="input-field col s12">
+              <input name="addClosingDataToWorkingHourLogsclosingReadingKM" id="addClosingDataToWorkingHourLogsclosingReadingKM" type="number" class="validate" step="0.01" required>
+              <!--required -->
+              <label for="addClosingDataToWorkingHourLogsclosingReadingKM">बंद रिडींग</label>
+              <div class="addClosingDataToWorkingHourLogsclosingReadingKM-error"></div>
+            </div>
+          </div>
+
+          <div class="file-field input-field col s12" style="margin-left: -15px;">
+            <div class="right-align">
+              <div class="btn teal darken-4">
+                <span><i class="Medium material-icons">attach_file</i></span>
+                <input id="addClosingDataToWorkingHourLogsclosingReadingPhoto" type="file" accept="image/*" required>
+              </div>
+              <div class="file-path-wrapper">
+                <label for="addClosingDataToWorkingHourLogsclosingReadingPhoto" style="margin-right: 60px;">बंद रिडींग फोटो</label>
+                <input class="file-path validate" type="text">
+              </div>
+            </div>
+          </div>
+
+          <div class="progress" id="addClosingDataToWorkingHourLogsclosingpreLoader" style="display: none;">
+            <div class="indeterminate"></div>
+          </div>
+
+          <div class="row">
+            <div class="col s12 center-align">
+              <button id="addClosingDataToWorkingHourLogsBtn" class="waves-effect waves-light btn teal darken-4">Submit</button>
+            </div>
+          </div>
+
+          <div class="row" id="showErrataddClosingDataToWorkingHourLogs" style="display: none;">
+            <div class=" s12 center-align">
+              <p id="logErrataddClosingDataToWorkingHourLogs" class="red"></p>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+  <script>
+    const loggedInUserElem = document.getElementById('userIdElem');
+    const loggedInUserId = loggedInUserElem.getAttribute('data-user-id');
+
+
+    const createNewWorkingHrsTransactionForm = document.getElementById('createNewWorkingHrsTransactionForm');
+    createNewWorkingHrsTransactionForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      document.getElementById('createNewWorkingHrsTransactionshowErratFirstEntryBtn').disabled = true;
+      document.getElementById('createNewWorkingHrsTransactionPreloader').style.display = 'block';
+
+      try {
+        const formData = new FormData();
+        formData.append('loggedInUserId', loggedInUserId);
+        formData.append('workingHoursMachineId', createNewWorkingHrsTransactionForm.createNewWorkingHrsTransactionMachineId.value);
+        formData.append('workingHoursOpeningReadingKM', createNewWorkingHrsTransactionForm.createNewWorkingHrsTransactionopeningReadingKM.value);
+        formData.append('workingHoursOpeningReadingKMPhoto', createNewWorkingHrsTransactionForm.createNewWorkingHrsTransactionopeningReadingKMPhoto.files[0]);
+
+        /* formData.forEach((item) => {
+          console.log(item);
+        }); */
+
+
+        const res = await fetch('/createnewworkinghrstransaction', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await res.json();
+
+        if (data.error && parseInt(data.error.length) > 0) {
+          document.getElementById('createNewWorkingHrsTransactionshowErratFirstEntryDiv').style.display = 'block';
+          document.getElementById('createNewWorkingHrsTransactionlogErratFirstEntryForm').innerText = data.error;
+        } else if (data.message !== 'Working Hours created successfully') { // todo : this message should receive from the server.
+          document.getElementById('createNewWorkingHrsTransactionshowErratFirstEntryBtn').disabled = false;
+          document.getElementById('createNewWorkingHrsTransactionlogErratFirstEntryForm').innerText = data.error;
+        } else if (data.message == 'Working Hours created successfully') {
+          document.getElementById('createNewWorkingHrsTransactionshowErratFirstEntryBtn').disabled = false;
+          createNewWorkingHrsTransactionForm.reset();
+          let elem = document.querySelector('#createNewWorkingHrsTransactionModal');
+          M.Modal.init();
+          let instance = M.Modal.getInstance(elem);
+          instance.close();
+          location.assign('/machineoperatorpage');
+        }
+      } catch (error) {
+        console.error(error);
+        document.getElementById('createNewWorkingHrsTransactionshowErratFirstEntryDiv').style.display = 'block';
+        document.getElementById('createNewWorkingHrsTransactionlogErratFirstEntryForm').innerText = error.message;
+      }
+
+    });
+
+    
+    const addClosingDataToWorkingHourLogsBtn = document.querySelectorAll('.addClosingDataToWorkingHourLogsBtn');
+    addClosingDataToWorkingHourLogsBtn.forEach(item => {
+      item.addEventListener('click', (event) =>{
+        const docId = event.target.getAttribute('data-doc-id-edit-workinghours');
+        document.getElementById('addClosingDataToWorkingHourLogsclosingReadingKM').setAttribute('data-doc-id', docId);
+      })
+    })
+
+
+    const addClosingDataToWorkingHourLogsForm = document.getElementById('addClosingDataToWorkingHourLogsForm');
+    addClosingDataToWorkingHourLogsForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      document.getElementById('addClosingDataToWorkingHourLogsBtn').disabled = true;
+      document.getElementById('addClosingDataToWorkingHourLogsclosingpreLoader').style.display = 'block';
+      const currDocId = document.getElementById('addClosingDataToWorkingHourLogsclosingReadingKM').getAttribute('data-doc-id')
+      try {
+        const formData = new FormData();
+        formData.append('currDocId', currDocId);
+        formData.append('workingHoursclosingReadingKM', addClosingDataToWorkingHourLogsForm.addClosingDataToWorkingHourLogsclosingReadingKM.value);
+        formData.append('workingHoursclosingReadingPhoto', addClosingDataToWorkingHourLogsForm.addClosingDataToWorkingHourLogsclosingReadingPhoto.files[0]);
+        const res = await fetch('/addclosingdatatocurrdocworkinghourslogs', {
+          method: 'POST',
+          body: formData
+        })
+
+        const data = await res.json();
+        if (data.message === 'Closing Data Uploaded Successfully') {
+          console.log('Closing Data Uploaded Successfully');
+          document.getElementById('addClosingDataToWorkingHourLogsBtn').disabled = false;
+          document.getElementById('addClosingDataToWorkingHourLogsclosingpreLoader').style.display = 'none';
+          addClosingDataToWorkingHourLogsForm.reset();
+          let elem = document.querySelector('#addClosingDataToWorkingHourLogsModal');
+          M.Modal.init();
+          let instance = M.Modal.getInstance(elem);
+          instance.close();
+          location.assign('/machineoperatorpage');
+        } else if (data.message !== 'Closing Data Uploaded Successfully') {
+          // console.log('line no 443' , data.message);
+          document.getElementById('showErrataddClosingDataToWorkingHourLogs').style.display = 'block';
+          document.getElementById('logErrataddClosingDataToWorkingHourLogs').innerText = data.message;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+
+
+  </script>
+
+
+  <%- include('partials/footer'); -%>

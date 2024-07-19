@@ -20,13 +20,14 @@
     <!-- <a href="#email"><span class="white-text email"></span></a> -->
   </div></li>
   <!-- <li><a href="#!"><i class="material-icons">business</i>D C AJMERA</a></li> -->
-  <li><a href="#createNewCustomerModal" class="modal-trigger">Add New User</a></li>
+  <li><a href="#createNewCustomerModal" class="modal-trigger">Add New Petrol Consumer</a></li>
+  <li><a href="#createNewMachineOperatorModal" class="modal-trigger">Add New Machine Operator</a></li>
   <li><div class="divider"></div></li>
   <li><a href="">Components</a></li>
   <li><a href="/logout">Log Out</a></li>
 </ul>
 
-<!-- CREATE NEW CUSTOMER MODAL -->
+<!-- CREATE NEW PETROL CONSUMER MODAL -->
 <div id="createNewCustomerModal" class="modal">
     <div class="modal-content">
       <h4 class="center">Add New User</h4>
@@ -86,6 +87,45 @@
     </div>
   </div>
 
+
+
+  
+<!-- CREATE NEW PETROL CONSUMER MODAL -->
+<div id="createNewMachineOperatorModal" class="modal">
+  <div class="modal-content">
+    <h4 class="center">Add Machine Operator</h4>
+    <div class="row">
+      <form class="col s12" id="createNewMachineOperatorForm">
+        <div class="row">
+          <div class="input-field col s12">
+            <input name="operatorFullName" id="operatorFullName" type="text" class="validate" required>
+            <label for="operatorFullName">Full Name</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input name="operatorEmail" id="operatorEmail" type="email" class="validate" required>
+            <label for="operatorEmail">Email</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input name="operatorEmailPassword" id="operatorEmailPassword" type="text" class="validate" required>
+            <label for="operatorEmailPassword">Password</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12" id="errorAtcreateNewMachineOperatorDiv" style="display: none;">
+            <p class="errorAtcreateNewMachineOperatorModal"></p>
+          </div>
+        </div>
+        <button class="waves-effect waves-light btn teal darken-4 center">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+
   
 
   <script>
@@ -128,6 +168,41 @@
       console.log(error);
     }
   })
+
+
+  const createNewMachineOperatorForm = document.getElementById('createNewMachineOperatorForm');
+  createNewMachineOperatorForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const operatorFullName = createNewMachineOperatorForm.operatorFullName.value;
+    const operatorEmail = createNewMachineOperatorForm.operatorEmail.value;
+    const operatorEmailPassword = createNewMachineOperatorForm.operatorEmailPassword.value;
+
+    try {
+      const res = await fetch('/createnewmachineoperator', {
+        method: 'POST',
+        body: JSON.stringify({ operatorFullName, operatorEmail, operatorEmailPassword }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await res.json();
+      console.log(data);
+      if (data.errors) {
+        document.getElementById('errorAtcreateNewMachineOperatorDiv').style.display = 'block';
+        document.getElementById('errorAtcreateNewMachineOperatorModal').innerText = data.errors;
+      }
+      if (data) {
+        location.assign('/sysadminpage')
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+
+  });
+
+
+
+
+
   </script>
 
 <%- include('partials/footer'); -%>

@@ -17,7 +17,13 @@ router.post('/addclosingdatatocurrdoc', authController.addclosingdatatocurrdoc_p
 router.get('/getrequestersavailablemoney', authController.getrequestersavailablemoney_get);
 router.post('/addmoneytorequestersac', authController.addmoneytorequestersac_post);
 
+//OPERATORS APP
+//createnewmachineoperator
+router.post('/createnewmachineoperator', authController.createnewmachineoperator_post);
 
 
 
 module.exports = router;
+router.get('/machineoperatorpage', authController.machineoperatorpage_get);
+router.post('/createnewworkinghrstransaction', authController.createnewworkinghrstransaction_post)
+router.post('/addclosingdatatocurrdocworkinghourslogs', authController.addclosingdatatocurrdocworkinghourslogs_post)

@@ -12,6 +12,7 @@ const { google } = require('googleapis');
 const { promisify } = require('util');
 const axios = require('axios');
 const mv = promisify(require('mv'));
+const machineWorkingHoursLogs = require("../models/machineWorkingHoursLogs");
 
 
 
@@ -95,6 +96,10 @@ module.exports.login_get = (req, res) => {
 
 module.exports.approver_get = (req, res) => {
     res.render("approverpage");
+};
+
+module.exports.machineoperatorpage_get = (req, res) => {
+    res.render("machineoperatorpage");
 };
 
 module.exports.serveImage_get = async (req, res) => {
@@ -409,7 +414,7 @@ module.exports.addclosingdatatocurrdoc_post = async (req, res) => {
 module.exports.getrequestersavailablemoney_get = async (req, res) => {
     // GET ALL THE USER DETAILS
     try {
-        const allUser = await User.find();
+        const allUser = await User.find({ userRole : 'requester'});
         res.status(200).json({ allUser });
     } catch (error) {
         console.log(error);
@@ -455,6 +460,109 @@ module.exports.addmoneytorequestersac_post = async (req, res) => {
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+
+
+module.exports.createnewmachineoperator_post = async (req, res) => {
+    const { operatorFullName, operatorEmail, operatorEmailPassword } = req.body;
+    const userRole = 'Machine Operator';
+    const fullname = operatorFullName;
+    const email = operatorEmail;
+    const password = operatorEmailPassword;
+    try {
+        const user = await User.create({ fullname, email, password, userRole });
+        const token = createToken(user._id);
+        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+        res.status(201).json({ user: user._id });
+    } catch (error) {
+        // const errors = handleErrors(error);
+        console.log(error.message);
+        res.status(400).json({ error });
+    }
+};
+
+
+
+module.exports.createnewworkinghrstransaction_post = async (req, res) => {
+    try {
+        const { loggedInUserId, workingHoursMachineId, workingHoursOpeningReadingKM  } = req.body;
+
+        // Fetch the logged-in user's name
+        const user = await User.findOne({ _id: loggedInUserId });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const loggedInUserName = user.fullname;
+
+        if (!req.files || !req.files.workingHoursOpeningReadingKMPhoto) {
+            return res.status(400).json({ error: 'All photos are required' });
+        }
+
+        
+
+        const workingHoursOpeningReadingKMPhoto = req.files.workingHoursOpeningReadingKMPhoto;
+        const workingHoursOpeningReadingKMPhotoData = await manageUploadedFile('create', workingHoursOpeningReadingKMPhoto);
+        const workingHoursOpeningReadingKMPhotoDataUpload = await uploadFile(workingHoursOpeningReadingKMPhotoData.filePath, workingHoursOpeningReadingKMPhotoData.mimetype);
+
+        const updatedMachineWorkingHoursLogs = new machineWorkingHoursLogs({
+            loggedInUserId,
+            loggedInUserName,
+            workingHoursMachineId,
+            workingHoursOpeningReadingKM,
+            workingHoursOpeningReadingKMPhoto: workingHoursOpeningReadingKMPhotoDataUpload.webContentLink
+        });
+        await updatedMachineWorkingHoursLogs.save();
+        res.status(200).json({ message: 'Working Hours created successfully' });
+        await manageUploadedFile('delete', workingHoursOpeningReadingKMPhoto);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+module.exports.addclosingdatatocurrdocworkinghourslogs_post = async (req, res) => {
+    try {
+        const { currDocId, workingHoursclosingReadingKM } = req.body;
+        if (!req.files || !req.files.workingHoursclosingReadingPhoto) {
+            return res.status(400).json({ error: 'All photos are required' });
+        }
+        const uploadclosingReadingPhoto = req.files.workingHoursclosingReadingPhoto;
+        const localClosingPhoto = await manageUploadedFile('create', uploadclosingReadingPhoto);
+        const webLink = await uploadFile(localClosingPhoto.filePath, localClosingPhoto.mimetype);
+        const currmachineWorkingHoursLogs = await machineWorkingHoursLogs.findOne({ _id: currDocId });
+        if (!currmachineWorkingHoursLogs) {
+            return res.status(404).json({ error: 'log not found' });
+        }
+        const openingReading = currmachineWorkingHoursLogs.workingHoursOpeningReadingKM;
+        const lenghtOfOpeningReading = openingReading.toString().length;
+        const lenghtOfClosingReading = workingHoursclosingReadingKM.toString().length;
+        const openingReadingKMVal = parseInt(currmachineWorkingHoursLogs.workingHoursOpeningReadingKM);
+        if (lenghtOfClosingReading === lenghtOfOpeningReading) {
+            if (parseInt(workingHoursclosingReadingKM) > openingReadingKMVal) {
+                const totatRunningKM = workingHoursclosingReadingKM - openingReadingKMVal;
+                const result = await machineWorkingHoursLogs.updateOne({ _id: currDocId }, {
+                    $set: {
+                        workingHoursclosingReadingKM: workingHoursclosingReadingKM,
+                        workingHoursclosingReadingPhoto: webLink.webContentLink,
+                        runningKM: parseFloat(totatRunningKM).toFixed(2)
+                    }
+                });
+                res.status(200).json({ message: 'Closing Data Uploaded Successfully' });
+                await manageUploadedFile('delete', uploadclosingReadingPhoto);
+            } else {
+                res.status(400).json({ message: 'Closing Reading KM should be greater than Opening Reading KM' });
+            }
+        } else {
+            res.status(400).json({ message: 'Closing Reading KM should be of same length as Opening Reading KM' });
+        }
+    } catch (error) {
         console.log(error);
         res.status(500).json({ error: error.message });
     }

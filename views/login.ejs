@@ -61,7 +61,10 @@ const loginForm = document.querySelector('#loginForm');
               location.assign('/consumerpage');
             } else if (data.userrole === 'approver'){
             location.assign('/approverpage ');
-        } else {
+        } else if (data.userrole === 'Machine Operator'){
+            location.assign('/machineoperatorpage');
+        }
+         else {
           location.assign('/login');
         }
         }

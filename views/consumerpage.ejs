@@ -133,10 +133,10 @@
                         <% if(elem.decision !=='approved' ) { %>
                           <% if(elem.selphiPhotoUrl !=='0' && elem.closingReadingKMPhoto ==='0') {%>
                             <button href="#addClosingDataToCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
-                              class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Edit</button>
+                              class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Add Closing</button>
                             <%} else if (elem.selphiPhotoUrl ==='0') { %>
                               <button href="#editCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
-                                class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Edit</button>
+                                class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Add Selfi</button>
                               <% } else if (elem.selphiPhotoUrl !=='0' && elem.closingReadingKMPhoto !== '0') {%>
                                 <button href="#ediFullCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
                                   class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Edit</button>

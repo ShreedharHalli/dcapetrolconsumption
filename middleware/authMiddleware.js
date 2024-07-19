@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const CommuteLog = require("../models/commuteLogs");
+const machineWorkingHoursLogs = require("../models/machineWorkingHoursLogs");
 
 const requireAuth = (req, res, next) => {
     const token = req.cookies.jwt;
@@ -80,6 +81,21 @@ const checkUser = async (req, res, next) => {
                 selphiPhotoUrl: log.selphiPhoto
             }));
             res.locals.allcommuteLogs = updatedLogs;
+        } else if (user.userRole === 'Machine Operator') {
+            const queryOptions = {
+                approver: { decision: 'Pending At Approver' }
+            };
+            const logsQuery = machineWorkingHoursLogs.find(queryOptions[user.userRole])
+                .sort({ timeStamp: -1 })
+                .limit(40)
+                .lean();
+                const logs = await logsQuery;
+                const updatedLogs = logs.map(log => ({
+                    ...log,
+                    openingReadingKMPhotoUrl: log.workingHoursOpeningReadingKM,
+                    closingReadingKMPhotoUrl: log.workingHoursOpeningReadingKMPhoto,
+                }));
+                res.locals.workingHoursLogs = updatedLogs;
         }
  
         next();

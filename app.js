@@ -45,4 +45,5 @@ app.get('/', (req, res) => res.render('login'));
 app.get('/sysadminpage', requireAuth, (req, res) => res.render('sysadminpage'));
 app.get('/consumerpage', requireAuth, (req, res) =>  res.render('consumerpage'));
 app.get('/approverpage', requireAuth, (req, res) =>  res.render('approverpage'));
+app.get('/machineoperatorpage', requireAuth, (req, res) =>  res.render('machineoperatorpage'));
 app.use(authRoutes);
