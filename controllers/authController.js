@@ -143,7 +143,7 @@ module.exports.approvecommute_post = async (req, res) => {
         //  console.log(updateUserData)
         // Respond with a success message
         res.status(200).json({ message: 'Commute log approved successfully', commuteLog });
-        const webhookURL = "https://script.google.com/macros/s/AKfycbwaOCQSQ_VCBLbX_fqxXU33MdBs6XfHUEvUksiZdT8Wzw4E37pV5iVODc9pGmadsEjC/exec"
+        const webhookURL = "https://script.google.com/macros/s/AKfycbxZKSJWkSTd5KjdxVs4SZf0CrGCAkrWy6AUXTYJW1q8ST_koqpH3pKRc6GDkdQCGZsk/exec"
         try {
           await axios.post(webhookURL, JSON.stringify(commuteLog));
         } catch (error) {
@@ -555,6 +555,13 @@ module.exports.addclosingdatatocurrdocworkinghourslogs_post = async (req, res) =
                     }
                 });
                 res.status(200).json({ message: 'Closing Data Uploaded Successfully' });
+                const webhookURL = "https://script.google.com/macros/s/AKfycbwaOCQSQ_VCBLbX_fqxXU33MdBs6XfHUEvUksiZdT8Wzw4E37pV5iVODc9pGmadsEjC/exec"
+                    try {
+                    await axios.post(webhookURL, JSON.stringify(result));
+                    } catch (error) {
+                    console.log(error);
+                    console.log(error.message);
+                    }
                 await manageUploadedFile('delete', uploadclosingReadingPhoto);
             } else {
                 res.status(400).json({ message: 'Closing Reading KM should be greater than Opening Reading KM' });
