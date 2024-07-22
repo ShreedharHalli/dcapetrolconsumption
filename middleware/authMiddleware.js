@@ -82,10 +82,7 @@ const checkUser = async (req, res, next) => {
             }));
             res.locals.allcommuteLogs = updatedLogs;
         } else if (user.userRole === 'Machine Operator') {
-            const queryOptions = {
-                approver: { decision: 'Pending At Approver' }
-            };
-            const logsQuery = machineWorkingHoursLogs.find(queryOptions[user.userRole])
+            const logsQuery = machineWorkingHoursLogs.find( { loggedInUserId : user._id })
                 .sort({ timeStamp: -1 })
                 .limit(40)
                 .lean();

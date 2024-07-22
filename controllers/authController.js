@@ -556,7 +556,7 @@ module.exports.addclosingdatatocurrdocworkinghourslogs_post = async (req, res) =
                 });
                 res.status(200).json({ message: 'Closing Data Uploaded Successfully' });
                 const updatedOne = await machineWorkingHoursLogs.findOne({ _id: currDocId });
-                const webhookURL = "https://script.google.com/macros/s/AKfycbxcLgBtU1WSaG7XzLOFRj4WcgXTaDlKHnhCwFejPmbDfuQVpEZr-V-bb5nikbvvjRRR/exec"
+                const webhookURL = "https://script.google.com/macros/s/AKfycbwE1Z-i2AoCEJmM3NdzqAY17LXAjxqpqeod1Pl9D3uZImo8bPFtfKJOo-sDLmQjgFD2/exec"
                     try {
                     await axios.post(webhookURL, JSON.stringify(updatedOne));
                     } catch (error) {
