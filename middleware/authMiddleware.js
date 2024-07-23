@@ -81,6 +81,23 @@ const checkUser = async (req, res, next) => {
                 selphiPhotoUrl: log.selphiPhoto
             }));
             res.locals.allcommuteLogs = updatedLogs;
+
+
+            // SHOW WORKING HOURS LOGS TO THE APPROVER
+            const queryOptionsForWorkingHoursLogs = {
+                approver: { decision: 'Pending At Approver' }
+            };
+            const logsQueryForWorkingHoursLogs = machineWorkingHoursLogs.find(queryOptionsForWorkingHoursLogs[user.userRole])
+                .sort({ timeStamp: -1 })
+                .limit(40)
+                .lean();
+                const logsForWorkingHoursLogs = await logsQueryForWorkingHoursLogs;
+                const updatedLogsForWorkingHoursLogs = logsForWorkingHoursLogs.map(log => ({
+                    ...log,
+                    openingReadingKMPhotoUrl: log.workingHoursOpeningReadingKM,
+                    closingReadingKMPhotoUrl: log.workingHoursOpeningReadingKMPhoto,
+                }));
+                res.locals.workingHoursLogsForApprover = updatedLogsForWorkingHoursLogs;
         } else if (user.userRole === 'Machine Operator') {
             const logsQuery = machineWorkingHoursLogs.find( { loggedInUserId : user._id })
                 .sort({ timeStamp: -1 })

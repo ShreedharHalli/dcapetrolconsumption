@@ -15,6 +15,13 @@
             var instances = M.Collapsible.init(elems, {});
             var elems = document.querySelectorAll('.datepicker');
             var instances = M.Datepicker.init(elems, {format: 'dd-mm-yyyy'});
+
+            if (localStorage.getItem('workingHrsApproved') === 'true') {
+                document.getElementById('commuteList').style.display = 'none';
+                document.getElementById('showWorkingHoursList').style.display = 'block';
+                // Remove the flag to prevent this from happening on every page load
+                localStorage.removeItem('workingHrsApproved');
+  }
     });
 
     </script>

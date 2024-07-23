@@ -38,6 +38,11 @@ const machineWorkingHoursLogSchema = new mongoose.Schema({
    runningKM: {
        type: Number,
        default: 0
+   },
+   decision: {
+       type: String,
+       required: true,
+       default: 'Pending At Requester'
    }
 });
 

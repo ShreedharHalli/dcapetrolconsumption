@@ -27,3 +27,5 @@ module.exports = router;
 router.get('/machineoperatorpage', authController.machineoperatorpage_get);
 router.post('/createnewworkinghrstransaction', authController.createnewworkinghrstransaction_post)
 router.post('/addclosingdatatocurrdocworkinghourslogs', authController.addclosingdatatocurrdocworkinghourslogs_post)
+router.post('/approveworkinghrs', authController.approveworkinghrs_post)
+router.post('/denyworkinghrs', authController.denyworkinghrs_post)

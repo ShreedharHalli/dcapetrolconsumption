@@ -551,18 +551,11 @@ module.exports.addclosingdatatocurrdocworkinghourslogs_post = async (req, res) =
                     $set: {
                         workingHoursclosingReadingKM: workingHoursclosingReadingKM,
                         workingHoursclosingReadingPhoto: webLink.webContentLink,
-                        runningKM: parseFloat(totatRunningKM).toFixed(2)
+                        runningKM: parseFloat(totatRunningKM).toFixed(2),
+                        decision: 'Pending At Approver'
                     }
                 });
                 res.status(200).json({ message: 'Closing Data Uploaded Successfully' });
-                const updatedOne = await machineWorkingHoursLogs.findOne({ _id: currDocId });
-                const webhookURL = "https://script.google.com/macros/s/AKfycbwE1Z-i2AoCEJmM3NdzqAY17LXAjxqpqeod1Pl9D3uZImo8bPFtfKJOo-sDLmQjgFD2/exec"
-                    try {
-                    await axios.post(webhookURL, JSON.stringify(updatedOne));
-                    } catch (error) {
-                    console.log(error);
-                    console.log(error.message);
-                    }
                 await manageUploadedFile('delete', uploadclosingReadingPhoto);
             } else {
                 res.status(400).json({ message: 'Closing Reading KM should be greater than Opening Reading KM' });
@@ -573,5 +566,55 @@ module.exports.addclosingdatatocurrdocworkinghourslogs_post = async (req, res) =
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: error.message });
+    }
+};
+
+
+
+module.exports.approveworkinghrs_post = async (req, res) => {
+    const { id } = req.body;
+    // Check if id is provided in the request body
+    if (!id) {
+        return res.status(400).json({ error: 'ID is required' });
+    }
+
+    try {
+        
+        // Find the commute log by ID and update its decision field
+        const updatedMachineWorkingHoursLogs = await machineWorkingHoursLogs.findByIdAndUpdate(id, { decision: 'approved' }, { new: true });
+        res.status(200).json({ message: 'working hrs approved successfully', updatedMachineWorkingHoursLogs });
+        const updatedOne = await machineWorkingHoursLogs.findOne({ _id: id });
+        const webhookURL = "https://script.google.com/macros/s/AKfycbwE1Z-i2AoCEJmM3NdzqAY17LXAjxqpqeod1Pl9D3uZImo8bPFtfKJOo-sDLmQjgFD2/exec"
+            try {
+            await axios.post(webhookURL, JSON.stringify(updatedOne));
+            } catch (error) {
+            console.log(error);
+            console.log(error.message);
+            }
+    } catch (error) {
+        // Handle errors and respond with an error message
+        res.status(400).json({ error: error.message });
+    }
+};
+
+
+
+
+module.exports.denyworkinghrs_post = async (req, res) => {
+    const { id } = req.body;
+    // Check if id is provided in the request body
+    if (!id) {
+        return res.status(400).json({ error: 'ID is required' });
+    }
+
+    try {
+        
+        // Find the commute log by ID and update its decision field
+        const updatedMachineWorkingHoursLogs = await machineWorkingHoursLogs.findByIdAndUpdate(id, { decision: 'denied' }, { new: true });
+        res.status(200).json({ message: 'working hrs denied successfully', updatedMachineWorkingHoursLogs });
+        
+    } catch (error) {
+        // Handle errors and respond with an error message
+        res.status(400).json({ error: error.message });
     }
 };
