@@ -72,8 +72,25 @@
               </tr>
             </thead>
             <tbody>
-              <% if (commuteLogsForLoggedInUser && commuteLogsForLoggedInUser.length> 0) { %>
-                <% commuteLogsForLoggedInUser.forEach((elem, index)=> { %>
+              <% 
+              let disableCreateNewButton = false;
+              const today = new Date().toLocaleDateString('en-GB');
+              if (commuteLogsForLoggedInUser && commuteLogsForLoggedInUser.length > 0) { 
+                commuteLogsForLoggedInUser.forEach((elem) => {
+                  const options = {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                  };
+                  const formattedDate = new Date(elem.timeStamp).toLocaleDateString('en-GB');
+                  if (formattedDate === today && elem.openingReadingKM > 0) {
+                    disableCreateNewButton = true;
+                  }
+                });
+              }
+              %>
+              <% if (commuteLogsForLoggedInUser && commuteLogsForLoggedInUser.length > 0) { %>
+                <% commuteLogsForLoggedInUser.forEach((elem, index) => { %>
                   <tr>
                     <td>
                       <% 
@@ -90,14 +107,13 @@
                       const formattedDate = new Date(elem.timeStamp).toLocaleString('en-GB', options).replace(',', ''); 
                       %>
                       <%= formattedDate %>
-
                     </td>
                     <td>
-                      <% if (elem.openingReadingKMPhotoUrl !=='0' ) { %>
+                      <% if (elem.openingReadingKMPhotoUrl !== '0') { %>
                         <a href="<%= elem.openingReadingKMPhotoUrl %>" target="_blank">Opening Reading Photo</a>
-                        <% } else { %>
-                          No Opening Reading KM Photo
-                          <% } %>
+                      <% } else { %>
+                        No Opening Reading KM Photo
+                      <% } %>
                     </td>
                     <td>
                       <%= elem.openingReadingKM %>
@@ -106,18 +122,18 @@
                       <%= elem.siteName %>
                     </td>
                     <td>
-                      <% if (elem.selphiPhotoUrl !=='0' ) { %>
+                      <% if (elem.selphiPhotoUrl !== '0') { %>
                         <a href="<%= elem.selphiPhotoUrl %>" target="_blank">Selfie Photo</a>
-                        <% } else { %>
-                          --
-                          <% } %>
+                      <% } else { %>
+                        --
+                      <% } %>
                     </td>
                     <td>
-                      <% if (elem.closingReadingKMPhotoUrl !=='0' ) { %>
+                      <% if (elem.closingReadingKMPhotoUrl !== '0') { %>
                         <a href="<%= elem.closingReadingKMPhotoUrl %>" target="_blank">Closing Reading Photo</a>
-                        <% } else { %>
-                          --
-                          <% } %>
+                      <% } else { %>
+                        --
+                      <% } %>
                     </td>
                     <td>
                       <%= elem.closingReadingKM %>
@@ -129,47 +145,50 @@
                       <%= elem.decision %>
                     </td>
                     <td>
-                      <% if (elem._id !=='0' ) { %>
-                        <% if(elem.decision !=='approved' ) { %>
-                          <% if(elem.selphiPhotoUrl !=='0' && elem.closingReadingKMPhoto ==='0') {%>
+                      <% if (elem._id !== '0') { %>
+                        <% if (elem.decision !== 'approved') { %>
+                          <% if (elem.selphiPhotoUrl !== '0' && elem.closingReadingKMPhoto === '0') { %>
                             <button href="#addClosingDataToCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
                               class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Add Closing</button>
-                            <%} else if (elem.selphiPhotoUrl ==='0') { %>
-                              <button href="#editCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
-                                class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Add Selfi</button>
-                              <% } else if (elem.selphiPhotoUrl !=='0' && elem.closingReadingKMPhoto !== '0') {%>
-                                <button href="#ediFullCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
-                                  class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Edit</button>
-                                <% } %>
-                                <% } else { %>
-                                  <button href="#editCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
-                                    class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn grey disabled">Edit</button>
-                                  <% } %>
-                                    <% } else { %>
-                                      --
-                                      <% } %>
+                          <% } else if (elem.selphiPhotoUrl === '0') { %>
+                            <button href="#editCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
+                              class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Add Selfie</button>
+                          <% } else if (elem.selphiPhotoUrl !== '0' && elem.closingReadingKMPhoto !== '0') { %>
+                            <button href="#ediFullCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
+                              class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Edit</button>
+                          <% } %>
+                        <% } else { %>
+                          <button href="#editCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
+                            class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn grey disabled">Edit</button>
+                        <% } %>
+                      <% } else { %>
+                        --
+                      <% } %>
                     </td>
                   </tr>
-                  <% }) %>
-                    <% } else { %>
-                      <tr>
-                        <th><i class="material-icons">error</i>Data Not Found</th>
-                      </tr>
-                      <% } %>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <th><i class="material-icons">error</i>Data Not Found</th>
+                </tr>
+              <% } %>
             </tbody>
           </table>
         </div>
         <div class="card-action" style="margin-top: -10px;">
           <div class="row">
             <div class="col s12 center-align">
-              <button href="#createNewCommuteModal"
-                class="modal-trigger waves-effect waves-light btn teal darken-4 z-depth-5">ENTER NEW TRIP</button>
+              <button id="createNewCommuteBtn" href="#createNewCommuteModal"
+                class="modal-trigger waves-effect waves-light btn teal darken-4 z-depth-5"
+                <% if (disableCreateNewButton) { %> disabled <% } %>
+              >ENTER NEW TRIP</button>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+  
 
 
 
@@ -443,8 +462,9 @@
           document.getElementById('showErratFirstEntryForm').style.display = 'block';
           document.getElementById('logErratFirstEntryForm').innerText = data.error;
         } else if (data.message !== 'Commute log created successfully') {
-          document.getElementById('createCommuteBtn').disabled = false;
+          // document.getElementById('createCommuteBtn').disabled = false;
         } else if (data.message == 'Commute log created successfully') {
+          document.getElementById('createNewCommuteBtn').disabled = true;
           document.getElementById('createCommuteBtn').disabled = false;
           commuteEntryForm.reset();
           let elem = document.querySelector('#createNewCommuteModal');

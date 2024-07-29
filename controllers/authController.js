@@ -384,7 +384,6 @@ module.exports.addclosingdatatocurrdoc_post = async (req, res) => {
         const lenghtOfOpeningReading = openingReading.toString().length;
         const lenghtOfClosingReading = closingReadingVal.toString().length;
         const openingReadingKMVal = parseInt(currCommuteLog.openingReadingKM);
-         if (lenghtOfClosingReading === lenghtOfOpeningReading) {
             if (parseInt(closingReadingVal) > openingReadingKMVal) {
                 const totatRunningKM = closingReadingVal - openingReadingKMVal;
                 const result = await CommuteLog.updateOne({ _id: currDocId }, {
@@ -401,9 +400,6 @@ module.exports.addclosingdatatocurrdoc_post = async (req, res) => {
             } else {
                 res.status(400).json({ message: 'Closing Reading KM should be greater than Opening Reading KM' });
             }
-        } else {
-            res.status(400).json({ message: 'Closing Reading KM should be of same length as Opening Reading KM' });
-        }
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: error.message });
@@ -452,11 +448,27 @@ module.exports.addmoneytorequestersac_post = async (req, res) => {
 
         await MoneyTransactions.insertMany(moneyTransactionDocs, { session });
 
+        // Call the webhook for each entry
+        for (const item of moneyIssuedUsersOnly) {
+            try {
+                await axios.post('https://script.google.com/macros/s/AKfycbzIP493on-5ooxNavQWhzpWbgOJn_xtWm_py5ODao9xelNvBkhI8-sbZj5zJQWJZf0B/exec',
+                    {
+                        userId: item.userId,
+                        amountGiven: parseInt(item.amountGiven),
+                        amountGivenDt: item.amountGivenDt,
+                        paymentMode: item.paymentMode 
+                    });
+                
+            } catch (error) {
+                console.log(error);
+            }
+            
+        }
+
         await session.commitTransaction();
         session.endSession();
 
-        // res.status(200).json({ message: 'Users updated and transactions recorded successfully', result });
-        res.status(200).json({ message: 'Users updated and transactions recorded successfully'});
+        res.status(200).json({ message: 'Users updated and transactions recorded successfully' });
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
@@ -464,6 +476,7 @@ module.exports.addmoneytorequestersac_post = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 
 
@@ -543,8 +556,7 @@ module.exports.addclosingdatatocurrdocworkinghourslogs_post = async (req, res) =
         const openingReading = currmachineWorkingHoursLogs.workingHoursOpeningReadingKM;
         const lenghtOfOpeningReading = openingReading.toString().length;
         const lenghtOfClosingReading = workingHoursclosingReadingKM.toString().length;
-        const openingReadingKMVal = parseInt(currmachineWorkingHoursLogs.workingHoursOpeningReadingKM);
-        if (lenghtOfClosingReading === lenghtOfOpeningReading) {
+        const openingReadingKMVal = parseFloat(currmachineWorkingHoursLogs.workingHoursOpeningReadingKM);
             if (parseInt(workingHoursclosingReadingKM) > openingReadingKMVal) {
                 const totatRunningKM = workingHoursclosingReadingKM - openingReadingKMVal;
                 const result = await machineWorkingHoursLogs.updateOne({ _id: currDocId }, {
@@ -560,9 +572,6 @@ module.exports.addclosingdatatocurrdocworkinghourslogs_post = async (req, res) =
             } else {
                 res.status(400).json({ message: 'Closing Reading KM should be greater than Opening Reading KM' });
             }
-        } else {
-            res.status(400).json({ message: 'Closing Reading KM should be of same length as Opening Reading KM' });
-        }
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: error.message });
