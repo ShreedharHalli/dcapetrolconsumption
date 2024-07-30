@@ -551,32 +551,34 @@ module.exports.addclosingdatatocurrdocworkinghourslogs_post = async (req, res) =
         const webLink = await uploadFile(localClosingPhoto.filePath, localClosingPhoto.mimetype);
         const currmachineWorkingHoursLogs = await machineWorkingHoursLogs.findOne({ _id: currDocId });
         if (!currmachineWorkingHoursLogs) {
-            return res.status(404).json({ error: 'log not found' });
+            return res.status(404).json({ error: 'Log not found' });
         }
-        const openingReading = currmachineWorkingHoursLogs.workingHoursOpeningReadingKM;
-        const lenghtOfOpeningReading = openingReading.toString().length;
-        const lenghtOfClosingReading = workingHoursclosingReadingKM.toString().length;
-        const openingReadingKMVal = parseFloat(currmachineWorkingHoursLogs.workingHoursOpeningReadingKM);
-            if (parseInt(workingHoursclosingReadingKM) > openingReadingKMVal) {
-                const totatRunningKM = workingHoursclosingReadingKM - openingReadingKMVal;
-                const result = await machineWorkingHoursLogs.updateOne({ _id: currDocId }, {
-                    $set: {
-                        workingHoursclosingReadingKM: workingHoursclosingReadingKM,
-                        workingHoursclosingReadingPhoto: webLink.webContentLink,
-                        runningKM: parseFloat(totatRunningKM).toFixed(2),
-                        decision: 'Pending At Approver'
-                    }
-                });
-                res.status(200).json({ message: 'Closing Data Uploaded Successfully' });
-                await manageUploadedFile('delete', uploadclosingReadingPhoto);
-            } else {
-                res.status(400).json({ message: 'Closing Reading KM should be greater than Opening Reading KM' });
-            }
+
+        const openingReadingKMVal = Number(currmachineWorkingHoursLogs.workingHoursOpeningReadingKM);
+        const closingReadingKMVal = Number(workingHoursclosingReadingKM);
+
+        if (closingReadingKMVal > openingReadingKMVal) {
+            const totalRunningKM = closingReadingKMVal - openingReadingKMVal;
+            const runningKM = Number(totalRunningKM.toFixed(2)); // Ensure the value is a number with two decimal places
+            const result = await machineWorkingHoursLogs.updateOne({ _id: currDocId }, {
+                $set: {
+                    workingHoursclosingReadingKM: closingReadingKMVal,
+                    workingHoursclosingReadingPhoto: webLink.webContentLink,
+                    runningKM: runningKM,
+                    decision: 'Pending At Approver'
+                }
+            });
+            res.status(200).json({ message: 'Closing Data Uploaded Successfully' });
+            await manageUploadedFile('delete', uploadclosingReadingPhoto);
+        } else {
+            res.status(400).json({ message: 'Closing Reading KM should be greater than Opening Reading KM' });
+        }
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: error.message });
     }
 };
+
 
 
 
