@@ -503,7 +503,7 @@ module.exports.createnewmachineoperator_post = async (req, res) => {
 
 module.exports.createnewworkinghrstransaction_post = async (req, res) => {
     try {
-        const { loggedInUserId, workingHoursMachineId, workingHoursOpeningReadingKM  } = req.body;
+        const { loggedInUserId, workingHoursMachineId, workingHoursOpeningReadingKM } = req.body;
 
         // Fetch the logged-in user's name
         const user = await User.findOne({ _id: loggedInUserId });
@@ -517,8 +517,8 @@ module.exports.createnewworkinghrstransaction_post = async (req, res) => {
             return res.status(400).json({ error: 'All photos are required' });
         }
 
-        const stringed = workingHoursOpeningReadingKM.toString();
-        
+        // Convert to number and round to 2 decimal places
+        const numberedworkingHoursOpeningReadingKM = parseFloat(Number(workingHoursOpeningReadingKM).toFixed(2));
 
         const workingHoursOpeningReadingKMPhoto = req.files.workingHoursOpeningReadingKMPhoto;
         const workingHoursOpeningReadingKMPhotoData = await manageUploadedFile('create', workingHoursOpeningReadingKMPhoto);
@@ -528,13 +528,10 @@ module.exports.createnewworkinghrstransaction_post = async (req, res) => {
             loggedInUserId,
             loggedInUserName,
             workingHoursMachineId,
-            workingHoursOpeningReadingKM : stringed,
+            workingHoursOpeningReadingKM: numberedworkingHoursOpeningReadingKM,
             workingHoursOpeningReadingKMPhoto: workingHoursOpeningReadingKMPhotoDataUpload.webContentLink
         });
         await updatedMachineWorkingHoursLogs.save();
-
-        
-
         res.status(200).json({ message: 'Working Hours created successfully' });
         await manageUploadedFile('delete', workingHoursOpeningReadingKMPhoto);
     } catch (error) {
@@ -562,8 +559,10 @@ module.exports.addclosingdatatocurrdocworkinghourslogs_post = async (req, res) =
         const closingReadingKMVal = Number(workingHoursclosingReadingKM);
 
         if (closingReadingKMVal > openingReadingKMVal) {
-            const totalRunningKM = closingReadingKMVal - openingReadingKMVal;
-            const runningKM = Number(totalRunningKM.toFixed(2)); // Ensure the value is a number with two decimal places
+            // Use a more precise calculation method
+            const totalRunningKM = parseFloat((closingReadingKMVal - openingReadingKMVal).toFixed(2));
+            const runningKM = totalRunningKM;
+            
             const result = await machineWorkingHoursLogs.updateOne({ _id: currDocId }, {
                 $set: {
                     workingHoursclosingReadingKM: closingReadingKMVal,
