@@ -512,12 +512,10 @@ module.exports.createnewworkinghrstransaction_post = async (req, res) => {
         }
 
         const loggedInUserName = user.fullname;
-
+        const numbered = Number(workingHoursOpeningReadingKM); // to avoid to store as double in mongo db
         if (!req.files || !req.files.workingHoursOpeningReadingKMPhoto) {
             return res.status(400).json({ error: 'All photos are required' });
         }
-
-        
 
         const workingHoursOpeningReadingKMPhoto = req.files.workingHoursOpeningReadingKMPhoto;
         const workingHoursOpeningReadingKMPhotoData = await manageUploadedFile('create', workingHoursOpeningReadingKMPhoto);
@@ -527,7 +525,7 @@ module.exports.createnewworkinghrstransaction_post = async (req, res) => {
             loggedInUserId,
             loggedInUserName,
             workingHoursMachineId,
-            workingHoursOpeningReadingKM,
+            numbered,
             workingHoursOpeningReadingKMPhoto: workingHoursOpeningReadingKMPhotoDataUpload.webContentLink
         });
         await updatedMachineWorkingHoursLogs.save();
