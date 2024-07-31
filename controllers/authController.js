@@ -517,7 +517,7 @@ module.exports.createnewworkinghrstransaction_post = async (req, res) => {
             return res.status(400).json({ error: 'All photos are required' });
         }
 
-        const numberedworkingHoursOpeningReadingKM = Number(workingHoursOpeningReadingKM);
+        const stringed = workingHoursOpeningReadingKM.toString();
         
 
         const workingHoursOpeningReadingKMPhoto = req.files.workingHoursOpeningReadingKMPhoto;
@@ -528,10 +528,13 @@ module.exports.createnewworkinghrstransaction_post = async (req, res) => {
             loggedInUserId,
             loggedInUserName,
             workingHoursMachineId,
-            workingHoursOpeningReadingKM : numberedworkingHoursOpeningReadingKM,
+            workingHoursOpeningReadingKM : stringed,
             workingHoursOpeningReadingKMPhoto: workingHoursOpeningReadingKMPhotoDataUpload.webContentLink
         });
         await updatedMachineWorkingHoursLogs.save();
+
+        
+
         res.status(200).json({ message: 'Working Hours created successfully' });
         await manageUploadedFile('delete', workingHoursOpeningReadingKMPhoto);
     } catch (error) {
