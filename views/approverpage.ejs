@@ -33,6 +33,7 @@
     </li>
     
     <li><a class="disabled" href="">Components</a></li>
+    <li><a id="dumpDataBaseBtn" href="">Dump Database</a></li>
     <li><a href="/logout">Log Out</a></li>
   </ul>
 
@@ -517,6 +518,22 @@ workingHrsApproveBtn.forEach(btnForThatDoc => {
         }
 
       });
+    });
+
+
+    const dumpDataBaseBtn = document.getElementById('dumpDataBaseBtn');
+    dumpDataBaseBtn.addEventListener('click', async (evt) => {
+      try {
+        const res = await fetch('/dumpworkinghours', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+            }
+        })
+        const data = await res.json();
+      } catch (error) {
+        console.log(error);
+      }
     });
 
 

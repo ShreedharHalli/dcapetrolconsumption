@@ -29,3 +29,4 @@ router.post('/createnewworkinghrstransaction', authController.createnewworkinghr
 router.post('/addclosingdatatocurrdocworkinghourslogs', authController.addclosingdatatocurrdocworkinghourslogs_post)
 router.post('/approveworkinghrs', authController.approveworkinghrs_post)
 router.post('/denyworkinghrs', authController.denyworkinghrs_post)
+router.post('/dumpworkinghours', authController.dumpworkinghours_post)

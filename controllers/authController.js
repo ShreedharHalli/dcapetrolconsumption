@@ -143,7 +143,7 @@ module.exports.approvecommute_post = async (req, res) => {
         //  console.log(updateUserData)
         // Respond with a success message
         res.status(200).json({ message: 'Commute log approved successfully', commuteLog });
-        const webhookURL = "https://script.google.com/macros/s/AKfycbxZKSJWkSTd5KjdxVs4SZf0CrGCAkrWy6AUXTYJW1q8ST_koqpH3pKRc6GDkdQCGZsk/exec"
+        const webhookURL = "https://script.google.com/macros/s/AKfycbxrjxmmnvinOYrBCc4GhdtjTVpNvw1xyWofHA5hEOLYf5pIbgVg13o2hu8D0-fQCW5H/exec"
         try {
           await axios.post(webhookURL, JSON.stringify(commuteLog));
         } catch (error) {
@@ -558,7 +558,7 @@ module.exports.addclosingdatatocurrdocworkinghourslogs_post = async (req, res) =
         const openingReadingKMVal = Number(currmachineWorkingHoursLogs.workingHoursOpeningReadingKM);
         const closingReadingKMVal = Number(workingHoursclosingReadingKM);
 
-        if (closingReadingKMVal > openingReadingKMVal) {
+        
             // Use a more precise calculation method
             const totalRunningKM = parseFloat((closingReadingKMVal - openingReadingKMVal).toFixed(2));
             const runningKM = totalRunningKM;
@@ -573,9 +573,7 @@ module.exports.addclosingdatatocurrdocworkinghourslogs_post = async (req, res) =
             });
             res.status(200).json({ message: 'Closing Data Uploaded Successfully' });
             await manageUploadedFile('delete', uploadclosingReadingPhoto);
-        } else {
-            res.status(400).json({ message: 'Closing Reading KM should be greater than Opening Reading KM' });
-        }
+        
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: error.message });
@@ -598,7 +596,7 @@ module.exports.approveworkinghrs_post = async (req, res) => {
         const updatedMachineWorkingHoursLogs = await machineWorkingHoursLogs.findByIdAndUpdate(id, { decision: 'approved' }, { new: true });
         res.status(200).json({ message: 'working hrs approved successfully', updatedMachineWorkingHoursLogs });
         const updatedOne = await machineWorkingHoursLogs.findOne({ _id: id });
-        const webhookURL = "https://script.google.com/macros/s/AKfycbwE1Z-i2AoCEJmM3NdzqAY17LXAjxqpqeod1Pl9D3uZImo8bPFtfKJOo-sDLmQjgFD2/exec"
+        const webhookURL = "https://script.google.com/macros/s/AKfycbzyG5YxEIlci3dsLaOejULezTNqlk7sWVJOWFouQiN-VpxDJQximbrqPABuUTc3B9Pj/exec"
             try {
             await axios.post(webhookURL, JSON.stringify(updatedOne));
             } catch (error) {
@@ -631,4 +629,40 @@ module.exports.denyworkinghrs_post = async (req, res) => {
         // Handle errors and respond with an error message
         res.status(400).json({ error: error.message });
     }
+};
+
+
+module.exports.dumpworkinghours_post = async (req, res) => {
+    /* try {
+        const machineWorkingHoursLogsData = await CommuteLog.find();
+         machineWorkingHoursLogsData.forEach((item) => {
+            const date = new Date(item.timeStamp);
+            const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30, which is 5 hours and 30 minutes
+            const istDate = new Date(date.getTime() + istOffset);
+
+            // Format the date as "YYYY-MM-DDTHH:MM:SS"
+            const formattedDate = istDate.toISOString().replace('T', ' ').substring(0, 19);
+            const docId = item._id;
+            const loggedInUserName = item.loggedInUserName;
+            const openingReadingKM = item.openingReadingKM;
+            const openingReadingKMPhoto = item.openingReadingKMPhoto;
+            const closingReadingKM = item.closingReadingKM;
+            const closingReadingKMPhoto = item.closingReadingKMPhoto;
+            const runningKM = item.runningKM;
+            const decision = item.decision;
+            const data = `${docId},${formattedDate},${loggedInUserName},${openingReadingKM},${openingReadingKMPhoto},${closingReadingKM},${closingReadingKMPhoto},${runningKM},${decision}\n`;
+            fs.appendFileSync('machineWorkingHoursLogs.csv', data);
+            
+            
+        });
+         
+        // create a json file with the data
+        const jsonData = JSON.stringify(machineWorkingHoursLogsData);
+        const filePath = 'machineWorkingHoursLogs.json';
+        fs.writeFileSync(filePath, jsonData);
+        res.status(200).json({ message: 'Data dumped successfully' }); 
+    } catch (error) {
+        // Handle errors and respond with an error message
+        res.status(400).json({ error: error.message });
+    } */
 };
