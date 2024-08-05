@@ -143,7 +143,7 @@ module.exports.approvecommute_post = async (req, res) => {
         //  console.log(updateUserData)
         // Respond with a success message
         res.status(200).json({ message: 'Commute log approved successfully', commuteLog });
-        const webhookURL = "https://script.google.com/macros/s/AKfycby3to7_LW0oE-ra10GzsC34_CT6XQ9v86j_duAca94utyWep_OWykkXKMvZyXZvKacG/exec"
+        const webhookURL = "https://script.google.com/macros/s/AKfycbw0agwEci1u_Le0stN3dHef5ajssIL7CWP-QJ8WEpUA8GS_iQQWwQHHqOlMk6S6WBX_/exec"
         try {
           await axios.post(webhookURL, JSON.stringify(commuteLog));
         } catch (error) {
@@ -598,7 +598,7 @@ module.exports.approveworkinghrs_post = async (req, res) => {
         const updatedMachineWorkingHoursLogs = await machineWorkingHoursLogs.findByIdAndUpdate(id, { decision: 'approved', decisionBy: decisionBy }, { new: true });
         res.status(200).json({ message: 'working hrs approved successfully', updatedMachineWorkingHoursLogs });
         const updatedOne = await machineWorkingHoursLogs.findOne({ _id: id });
-        const webhookURL = "https://script.google.com/macros/s/AKfycbwi9O9X9ING_-FRqnkZH_g2Ob7xXYXJKS3EkJfzekQE4sYXg43bquqZx_VAg5Gjt1wD/exec"
+        const webhookURL = "https://script.google.com/macros/s/AKfycbweo82b9oJyQMsOlOZD8j7tVvIDqWdx0x6zG0TXhxP_-iqlGWzJsEJ4ahqbtiytTRIm/exec"
             try {
             await axios.post(webhookURL, JSON.stringify(updatedOne));
             } catch (error) {
@@ -635,36 +635,24 @@ module.exports.denyworkinghrs_post = async (req, res) => {
 
 
 module.exports.dumpworkinghours_post = async (req, res) => {
-    /* try {
-        const machineWorkingHoursLogsData = await CommuteLog.find();
+    try {
+        const machineWorkingHoursLogsData = await User.find();
          machineWorkingHoursLogsData.forEach((item) => {
-            const date = new Date(item.timeStamp);
-            const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30, which is 5 hours and 30 minutes
-            const istDate = new Date(date.getTime() + istOffset);
+            // const date = new Date(item.timeStamp);
+            // const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30, which is 5 hours and 30 minutes
+            // const istDate = new Date(date.getTime() + istOffset);
 
-            // Format the date as "YYYY-MM-DDTHH:MM:SS"
-            const formattedDate = istDate.toISOString().replace('T', ' ').substring(0, 19);
-            const docId = item._id;
-            const loggedInUserName = item.loggedInUserName;
-            const openingReadingKM = item.openingReadingKM;
-            const openingReadingKMPhoto = item.openingReadingKMPhoto;
-            const closingReadingKM = item.closingReadingKM;
-            const closingReadingKMPhoto = item.closingReadingKMPhoto;
-            const runningKM = item.runningKM;
-            const decision = item.decision;
-            const data = `${docId},${formattedDate},${loggedInUserName},${openingReadingKM},${openingReadingKMPhoto},${closingReadingKM},${closingReadingKMPhoto},${runningKM},${decision}\n`;
+            // // Format the date as "YYYY-MM-DDTHH:MM:SS"
+            // const formattedDate = istDate.toISOString().replace('T', ' ').substring(0, 19);
+            const fullname = item.fullname;
+            const userID = item._id;
+            const data = `${fullname},${userID}\n`;
             fs.appendFileSync('machineWorkingHoursLogs.csv', data);
             
             
         });
-         
-        // create a json file with the data
-        const jsonData = JSON.stringify(machineWorkingHoursLogsData);
-        const filePath = 'machineWorkingHoursLogs.json';
-        fs.writeFileSync(filePath, jsonData);
-        res.status(200).json({ message: 'Data dumped successfully' }); 
     } catch (error) {
         // Handle errors and respond with an error message
         res.status(400).json({ error: error.message });
-    } */
+    }
 };
