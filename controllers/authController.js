@@ -120,7 +120,7 @@ module.exports.serveImage_get = async (req, res) => {
 
 
 module.exports.approvecommute_post = async (req, res) => {
-    const { id } = req.body;
+    const { id, decisionBy } = req.body;
     // Check if id is provided in the request body
     if (!id) {
         return res.status(400).json({ error: 'ID is required' });
@@ -129,7 +129,7 @@ module.exports.approvecommute_post = async (req, res) => {
     try {
         
         // Find the commute log by ID and update its decision field
-        const commuteLog = await CommuteLog.findByIdAndUpdate(id, { decision: 'approved' }, { new: true });
+        const commuteLog = await CommuteLog.findByIdAndUpdate(id, { decision: 'approved', decisionBy: decisionBy }, { new: true });
         // UPDATE USER DATA
         const user = await User.findById(commuteLog.loggedInUser);
         const newlastTotalRunningKM = commuteLog.runningKM + user.lastTotalRunningKM
@@ -143,7 +143,7 @@ module.exports.approvecommute_post = async (req, res) => {
         //  console.log(updateUserData)
         // Respond with a success message
         res.status(200).json({ message: 'Commute log approved successfully', commuteLog });
-        const webhookURL = "https://script.google.com/macros/s/AKfycbxrjxmmnvinOYrBCc4GhdtjTVpNvw1xyWofHA5hEOLYf5pIbgVg13o2hu8D0-fQCW5H/exec"
+        const webhookURL = "https://script.google.com/macros/s/AKfycby3to7_LW0oE-ra10GzsC34_CT6XQ9v86j_duAca94utyWep_OWykkXKMvZyXZvKacG/exec"
         try {
           await axios.post(webhookURL, JSON.stringify(commuteLog));
         } catch (error) {
@@ -158,7 +158,7 @@ module.exports.approvecommute_post = async (req, res) => {
 
 
 module.exports.denycommute_post = async (req, res) => {
-    const { id } = req.body;
+    const { id, decisionBy } = req.body;
     // Check if id is provided in the request body
     if (!id) {
         return res.status(400).json({ error: 'ID is required' });
@@ -167,7 +167,7 @@ module.exports.denycommute_post = async (req, res) => {
     try {
         
         // Find the commute log by ID and update its decision field
-        const commuteLog = await CommuteLog.findByIdAndUpdate(id, { decision: 'denied' }, { new: true });
+        const commuteLog = await CommuteLog.findByIdAndUpdate(id, { decision: 'denied', decisionBy: decisionBy }, { new: true });
         
 
         //  console.log(updateUserData)
@@ -503,7 +503,7 @@ module.exports.createnewmachineoperator_post = async (req, res) => {
 
 module.exports.createnewworkinghrstransaction_post = async (req, res) => {
     try {
-        const { loggedInUserId, workingHoursMachineId, workingHoursOpeningReadingKM } = req.body;
+        const { loggedInUserId, workingHoursMachineId, workingHoursOpeningReadingKM, createNewWorkingHrsTransactionSiteName } = req.body;
 
         // Fetch the logged-in user's name
         const user = await User.findOne({ _id: loggedInUserId });
@@ -529,7 +529,9 @@ module.exports.createnewworkinghrstransaction_post = async (req, res) => {
             loggedInUserName,
             workingHoursMachineId,
             workingHoursOpeningReadingKM: numberedworkingHoursOpeningReadingKM,
-            workingHoursOpeningReadingKMPhoto: workingHoursOpeningReadingKMPhotoDataUpload.webContentLink
+            workingHoursOpeningReadingKMPhoto: workingHoursOpeningReadingKMPhotoDataUpload.webContentLink,
+            createNewWorkingHrsTransactionSiteName,
+            siteName: createNewWorkingHrsTransactionSiteName
         });
         await updatedMachineWorkingHoursLogs.save();
         res.status(200).json({ message: 'Working Hours created successfully' });
@@ -584,7 +586,7 @@ module.exports.addclosingdatatocurrdocworkinghourslogs_post = async (req, res) =
 
 
 module.exports.approveworkinghrs_post = async (req, res) => {
-    const { id } = req.body;
+    const { id, decisionBy } = req.body;
     // Check if id is provided in the request body
     if (!id) {
         return res.status(400).json({ error: 'ID is required' });
@@ -593,10 +595,10 @@ module.exports.approveworkinghrs_post = async (req, res) => {
     try {
         
         // Find the commute log by ID and update its decision field
-        const updatedMachineWorkingHoursLogs = await machineWorkingHoursLogs.findByIdAndUpdate(id, { decision: 'approved' }, { new: true });
+        const updatedMachineWorkingHoursLogs = await machineWorkingHoursLogs.findByIdAndUpdate(id, { decision: 'approved', decisionBy: decisionBy }, { new: true });
         res.status(200).json({ message: 'working hrs approved successfully', updatedMachineWorkingHoursLogs });
         const updatedOne = await machineWorkingHoursLogs.findOne({ _id: id });
-        const webhookURL = "https://script.google.com/macros/s/AKfycbzyG5YxEIlci3dsLaOejULezTNqlk7sWVJOWFouQiN-VpxDJQximbrqPABuUTc3B9Pj/exec"
+        const webhookURL = "https://script.google.com/macros/s/AKfycbwi9O9X9ING_-FRqnkZH_g2Ob7xXYXJKS3EkJfzekQE4sYXg43bquqZx_VAg5Gjt1wD/exec"
             try {
             await axios.post(webhookURL, JSON.stringify(updatedOne));
             } catch (error) {
@@ -622,7 +624,7 @@ module.exports.denyworkinghrs_post = async (req, res) => {
     try {
         
         // Find the commute log by ID and update its decision field
-        const updatedMachineWorkingHoursLogs = await machineWorkingHoursLogs.findByIdAndUpdate(id, { decision: 'denied' }, { new: true });
+        const updatedMachineWorkingHoursLogs = await machineWorkingHoursLogs.findByIdAndUpdate(id, { decision: 'denied', decisionBy: decisionBy }, { new: true });
         res.status(200).json({ message: 'working hrs denied successfully', updatedMachineWorkingHoursLogs });
         
     } catch (error) {

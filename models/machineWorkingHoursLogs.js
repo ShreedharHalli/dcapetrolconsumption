@@ -1,3 +1,4 @@
+const { siteVerification } = require('googleapis/build/src/apis/siteVerification');
 const mongoose = require('mongoose');
 
 
@@ -43,6 +44,15 @@ const machineWorkingHoursLogSchema = new mongoose.Schema({
        type: String,
        required: true,
        default: 'Pending At Requester'
+   },
+   siteName: {
+    type: String,
+    required: true
+   },
+   decisionBy: {
+    type: String,
+    required: true,
+    default: '-'
    }
 });
 

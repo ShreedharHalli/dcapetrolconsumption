@@ -59,6 +59,11 @@
         type: String,
         required: true,
         default: 'Pending At Requester'
+    },
+    decisionBy: {
+        type: String,
+        required: true,
+        default: '-'
     }
 });
 

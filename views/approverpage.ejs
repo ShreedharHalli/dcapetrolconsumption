@@ -17,7 +17,7 @@
         <div class="background">
           <img src="/dcalogo.jpeg">
         </div>
-        <a id="userIdElem" href="#name" data-user-id="<%= user._id %>"><span class="white-text name">
+        <a id="userIdElem" href="#name" data-user-id="<%= user._id %>" data-user-name="<%= user.fullname %>"><span class="white-text name">
             <%= `Welcome, ${user.fullname}` %>
           </span></a>
         <!-- <a href="#email"><span class="white-text email"></span></a> -->
@@ -242,6 +242,7 @@
   <script>
     const loggedInUserElem = document.getElementById('userIdElem');
     const loggedInUserId = loggedInUserElem.getAttribute('data-user-id');
+    const loggedInUserName = loggedInUserElem.getAttribute('data-user-name');
 
     const commuteEntryForm = document.getElementById('createNewCommuteForm');
     commuteEntryForm.addEventListener('submit', async (evt) => {
@@ -277,7 +278,7 @@
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ id: docid })
+            body: JSON.stringify({ id: docid, decisionBy: loggedInUserName })
           });
           const data = await res.json();
           if (data.message === 'Commute log approved successfully') {
@@ -303,7 +304,7 @@
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ id: docid })
+            body: JSON.stringify({ id: docid, decisionBy: loggedInUserName })
           });
           const data = await res.json();
           if (data.message === 'Commute log denied successfully') {
@@ -470,7 +471,7 @@ workingHrsApproveBtn.forEach(btnForThatDoc => {
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ id: docid })
+            body: JSON.stringify({ id: docid, decisionBy: loggedInUserName })
           });
           const data = await res.json();
           if (data.message === 'working hrs approved successfully') {
@@ -502,7 +503,7 @@ workingHrsApproveBtn.forEach(btnForThatDoc => {
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ id: docid })
+            body: JSON.stringify({ id: docid, decisionBy: loggedInUserName })
           });
           const data = await res.json();
           if (data.message === 'working hrs denied successfully') {
