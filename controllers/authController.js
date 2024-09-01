@@ -143,7 +143,7 @@ module.exports.approvecommute_post = async (req, res) => {
         //  console.log(updateUserData)
         // Respond with a success message
         res.status(200).json({ message: 'Commute log approved successfully', commuteLog });
-        const webhookURL = "https://script.google.com/macros/s/AKfycbw0agwEci1u_Le0stN3dHef5ajssIL7CWP-QJ8WEpUA8GS_iQQWwQHHqOlMk6S6WBX_/exec"
+        const webhookURL = "https://script.google.com/macros/s/AKfycbxYIr_XgelujW5-kDJALQQO9J7H1N4sg0AN66a7xzRnExyvfF9gy6cD0P39HkNgP82-/exec"
         try {
           await axios.post(webhookURL, JSON.stringify(commuteLog));
         } catch (error) {
@@ -180,42 +180,6 @@ module.exports.denycommute_post = async (req, res) => {
     }
 };
 
-
-
-
-/* 
- client.on('message', async (msg) => {
-          console.log('one message event is fired');
-          // Call webhook here
-          const { body, from, fromMe, id, to } = msg;
-          const connectedWhatsappNo = to.replace(/@c\.us$/, '');
-          const object = {
-            msgBody: body,
-            msgFrom: from.replace(/@c\.us$/, ''),
-            msgFromMe: fromMe,
-            msgId: id.id,
-          };
-          console.log(`on message event is fired: ${msg.body}`);
-          console.log(`server wa no is: ${connectedWhatsappNo}`);
-          const currentDoc = await User.findOne({ connectedWhatsappNo });
-          console.log(currentDoc);
-          if (currentDoc && currentDoc.webHookUrl !== 'nowebhook') {
-            const webhookURL = currentDoc.webHookUrl;
-            try {
-              console.log(webhookURL);
-              await axios.post(webhookURL, JSON.stringify(object));
-            } catch (error) {
-              console.log(error);
-              console.log(error.message);
-            }
-          } else {
-            return;
-            
-          }
-        });
-
-
-*/
 
 
 

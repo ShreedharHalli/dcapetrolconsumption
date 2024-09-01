@@ -145,25 +145,35 @@
                       <%= elem.decision %>
                     </td>
                     <td>
-                      <% if (elem._id !== '0') { %>
-                        <% if (elem.decision !== 'approved') { %>
-                          <% if (elem.selphiPhotoUrl !== '0' && elem.closingReadingKMPhoto === '0') { %>
-                            <button href="#addClosingDataToCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
-                              class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Add Closing</button>
-                          <% } else if (elem.selphiPhotoUrl === '0') { %>
+                      <% 
+                        const currentDate = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+                        const timestampDate = new Date(parseInt(elem.timeStamp)).toISOString().split('T')[0]; // Convert timestamp to date and format to YYYY-MM-DD
+                    
+                        if (elem._id !== '0') { 
+                          if (elem.decision !== 'approved') { 
+                            if (elem.selphiPhotoUrl !== '0' && elem.closingReadingKMPhoto === '0') { 
+                              if (timestampDate === currentDate) { %>
+                                <!-- Button is enabled only if today's date matches the timestamp date -->
+                                <button href="#addClosingDataToCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
+                                  class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Add Closing</button>
+                              <% } else { %>
+                                <!-- Button is disabled if the timestamp does not match today's date -->
+                                <button class="editeCommuteFormBtn waves-effect waves-light btn teal darken-4" disabled>Add Closing</button>
+                              <% } 
+                            } else if (elem.selphiPhotoUrl === '0') { %>
+                              <button href="#editCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
+                                class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Add Selfie</button>
+                            <% } else if (elem.selphiPhotoUrl !== '0' && elem.closingReadingKMPhoto !== '0') { %>
+                              <button href="#ediFullCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
+                                class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Edit</button>
+                            <% } 
+                          } else { %>
                             <button href="#editCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
-                              class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Add Selfie</button>
-                          <% } else if (elem.selphiPhotoUrl !== '0' && elem.closingReadingKMPhoto !== '0') { %>
-                            <button href="#ediFullCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
-                              class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn teal darken-4">Edit</button>
-                          <% } %>
-                        <% } else { %>
-                          <button href="#editCommuteModal" data-doc-id-edit-commuteform="<%= elem._id %>"
-                            class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn grey disabled">Edit</button>
+                              class="editeCommuteFormBtn modal-trigger waves-effect waves-light btn grey disabled">Edit</button>
+                          <% } 
+                        } else { %>
+                          --
                         <% } %>
-                      <% } else { %>
-                        --
-                      <% } %>
                     </td>
                   </tr>
                 <% }) %>
