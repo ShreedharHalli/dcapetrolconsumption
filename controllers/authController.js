@@ -143,7 +143,7 @@ module.exports.approvecommute_post = async (req, res) => {
         //  console.log(updateUserData)
         // Respond with a success message
         res.status(200).json({ message: 'Commute log approved successfully', commuteLog });
-        const webhookURL = "https://script.google.com/macros/s/AKfycbxYIr_XgelujW5-kDJALQQO9J7H1N4sg0AN66a7xzRnExyvfF9gy6cD0P39HkNgP82-/exec"
+        const webhookURL = "https://script.google.com/macros/s/AKfycbx6-57Jt281tz79VMpXyG2nQdR5kEsZH9MECXeiU6Ua4DrFy0Hol6maNwH2Eryn1V37/exec"
         try {
           await axios.post(webhookURL, JSON.stringify(commuteLog));
         } catch (error) {
