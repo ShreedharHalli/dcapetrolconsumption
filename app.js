@@ -1,4 +1,4 @@
-const dotenv = require("dotenv");
+const dotenv = require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
@@ -9,7 +9,7 @@ const authRoutes = require('./routes/authRoutes');
 const { requireAuth, checkUser } = require('./middleware/authMiddleware');
 const http = require("http");
 
-dotenv.config();
+console.log(`this is a env file ${dotenv}`);
 
 const app = express();
 const PORT = 8080
