@@ -9,7 +9,7 @@ const authRoutes = require('./routes/authRoutes');
 const { requireAuth, checkUser } = require('./middleware/authMiddleware');
 const http = require("http");
 
-dotenv.config({ path: '/home/ubuntu/dca/dcapetrolconsumption/.env' });
+dotenv.config();
 
 const app = express();
 const PORT = 8080
@@ -29,11 +29,6 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 
-const result = dotenv.config();
-if (result.error) {
-    throw result.error;
-}
-console.log(result.parsed);
 
 console.log(`this is a mongodb url ${process.env.MONGODBURI}`);
 mongoose.connect(process.env.MONGODBURI).then(e => {
