@@ -9,7 +9,7 @@ const authRoutes = require('./routes/authRoutes');
 const { requireAuth, checkUser } = require('./middleware/authMiddleware');
 const http = require("http");
 
-dotenv.config();
+dotenv.config({ path: '/home/ubuntu/dca/dcapetrolconsumption/.env' });
 
 const app = express();
 const PORT = 8080
