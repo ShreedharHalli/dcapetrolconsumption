@@ -28,7 +28,7 @@ app.set('views', path.join(__dirname, 'views'));
 // view engine
 app.set('view engine', 'ejs');
 
-
+console.log(process.env.MONGODBURI);
 mongoose.connect(process.env.MONGODBURI).then(e => {
     server.listen(PORT);
     console.log('Mongodb connected and server listening on port ' + PORT);
