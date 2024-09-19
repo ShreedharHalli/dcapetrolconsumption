@@ -14,7 +14,7 @@
             var elems = document.querySelectorAll('.collapsible');
             var instances = M.Collapsible.init(elems, {});
             var elems = document.querySelectorAll('.datepicker');
-            var instances = M.Datepicker.init(elems, {format: 'mm-dd-yyyy'});
+            var instances = M.Datepicker.init(elems, {format: 'mm/dd/yyyy'});
 
             if (localStorage.getItem('workingHrsApproved') === 'true') {
                 document.getElementById('commuteList').style.display = 'none';

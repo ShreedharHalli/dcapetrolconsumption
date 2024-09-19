@@ -30,7 +30,6 @@ app.set('view engine', 'ejs');
 
 
 
-console.log(`this is a mongodb url ${process.env.MONGODBURI}`);
 mongoose.connect(process.env.MONGODBURI).then(e => {
     server.listen(PORT);
     console.log('Mongodb connected and server listening on port ' + PORT);

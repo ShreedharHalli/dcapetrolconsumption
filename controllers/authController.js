@@ -598,24 +598,71 @@ module.exports.denyworkinghrs_post = async (req, res) => {
 };
 
 
-module.exports.dumpworkinghours_post = async (req, res) => {
-    try {
-        const machineWorkingHoursLogsData = await User.find();
-         machineWorkingHoursLogsData.forEach((item) => {
-            // const date = new Date(item.timeStamp);
-            // const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30, which is 5 hours and 30 minutes
-            // const istDate = new Date(date.getTime() + istOffset);
 
+// DUMP CUMMUTE LOGS
+/* module.exports.dumpworkinghours_post = async (req, res) => {
+    try {
+        const machineWorkingHoursLogsData = await CommuteLog.find();
+         machineWorkingHoursLogsData.forEach((item) => {
+            const date = new Date(item.timeStamp);
+            const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30, which is 5 hours and 30 minutes
+            const istDate = new Date(date.getTime() + istOffset);
             // // Format the date as "YYYY-MM-DDTHH:MM:SS"
-            // const formattedDate = istDate.toISOString().replace('T', ' ').substring(0, 19);
-            const fullname = item.fullname;
-            const userID = item._id;
-            const data = `${fullname},${userID}\n`;
-            fs.appendFileSync('machineWorkingHoursLogs.csv', data);
+            const formattedDate = istDate.toISOString().replace('T', ' ').substring(0, 19);
+            // format the date as "mm/dd/yyyy"
+            const mmddyyyy = istDate.toLocaleDateString();
+            const loggedInUser = item.loggedInUser;
+            const openingReadingKM = item.openingReadingKM;
+            const closingReadingKM = item.closingReadingKM;
+            const siteName = item.siteName;
+            const runningKM = item.runningKM;
+            const ratePerKM = item.ratePerKM;
+            const amount = item.amount;
+            const decision = item.decision;
+            const vehicle = item.vehicle;
+            const timeStamp = item.timeStamp;
+            const loggedInUserName = item.loggedInUserName;
+            // const data = `${fullname},${userID}\n`;
+            const data = `${mmddyyyy},${loggedInUser},${loggedInUserName},${openingReadingKM},${closingReadingKM},${siteName},${runningKM},${ratePerKM},${amount},${decision},${vehicle},${timeStamp}\n`;
+            fs.appendFileSync('tripslogs.csv', data);
             
             
         });
     } catch (error) {
+        console.log(error);
+        // Handle errors and respond with an error message
+        res.status(400).json({ error: error.message });
+    }
+}; */
+
+
+// DUMP MONEY ISSUE TRANSACTIONS
+module.exports.dumpworkinghours_post = async (req, res) => {
+    try {
+        const machineWorkingHoursLogsData = await MoneyTransactions.find();
+         machineWorkingHoursLogsData.forEach((item) => {
+            const date = new Date(item.timeStamp);
+            const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30, which is 5 hours and 30 minutes
+            const istDate = new Date(date.getTime() + istOffset);
+            // // Format the date as "YYYY-MM-DDTHH:MM:SS"
+            const formattedDate = istDate.toISOString().replace('T', ' ').substring(0, 19);
+            // format the date as "mm/dd/yyyy"
+            const mmddyyyy = istDate.toLocaleDateString();
+            const userDocId = item.userDocId;
+            const amountGiven = item.amountGiven;
+            const amountGivenDt = item.amountGivenDt;
+            // convert amount given date from "dd-mm-yyyy" to "mm/dd/yyyy"
+            const amountGivenDtFormatted = new Date(amountGivenDt).toLocaleDateString();
+            const paymentMode = item.paymentMode;
+            const timeStamp = item.timeStamp;
+            // const data = `${fullname},${userID}\n`;
+            const data = `${mmddyyyy},${userDocId},${amountGiven},${amountGivenDt},${amountGivenDtFormatted},${paymentMode},${timeStamp}\n`;
+            fs.appendFileSync('moneytransactions.csv', data);
+            
+            
+        });
+    } catch (error) {
+        console.log(error);
         // Handle errors and respond with an error message
         res.status(400).json({ error: error.message });
     }
